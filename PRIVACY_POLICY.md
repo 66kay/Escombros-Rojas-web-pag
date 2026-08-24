@@ -1,4 +1,4 @@
-﻿# POLÍTICA DE PRIVACIDAD
+# POLÍTICA DE PRIVACIDAD
 ## PROYECTO: ESCOMBROS AMAURY ROJAS — RETIRO DE ESCOMBROS Y VENTA DE ÁRIDOS
 **Última actualización: Agosto 2026**
 
@@ -8,7 +8,7 @@ La presente Política de Privacidad describe cómo **Escombros Amaury Rojas** (e
 
 ### 1. Responsable del Tratamiento de Datos
 * **Nombre Comercial:** Escombros Amaury Rojas
-* **Dirección Física:** Av. Clotario Blest 2650, Santiago, Región Metropolitana
+* **Dirección Física:** Av. Clotario Blest 2694, Pedro Aguirre Cerda, Santiago, Región Metropolitana
 * **Correo de Contacto:** contacto@escombrosrojas.cl
 
 ---
