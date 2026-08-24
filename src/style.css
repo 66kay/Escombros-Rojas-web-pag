@@ -1,4 +1,4 @@
-﻿/* Paleta de Colores y Variables de Diseño (Gris Claro / Blanco con Rojo) */
+/* Paleta de Colores y Variables de Diseño (Gris Claro / Blanco con Rojo) */
 :root {
   --bg-primary: #f8f9fc;
   --bg-secondary: #ffffff;
@@ -284,11 +284,11 @@ h1, h2, h3, h4 {
 }
 
 .badge-icon {
-  font-size: 32px;
+  font-size: 38px;
   background-color: #fff;
   border: 1px solid var(--border-color);
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -592,7 +592,7 @@ h1, h2, h3, h4 {
 
 .btn-icon-inner {
   margin-right: 6px;
-  font-size: 18px;
+  font-size: 22px;
   vertical-align: middle;
 }
 
@@ -637,13 +637,13 @@ h1, h2, h3, h4 {
 .detail-icon {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  width: 48px;
-  height: 48px;
+  width: 54px;
+  height: 54px;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 26px;
   box-shadow: var(--shadow-sm);
 }
 
