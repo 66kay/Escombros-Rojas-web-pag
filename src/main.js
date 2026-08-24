@@ -1,4 +1,4 @@
-import './style.css';
+﻿import './style.css';
 
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:3000'
@@ -327,7 +327,7 @@ refreshAuditBtn.addEventListener('click', fetchAuditLogs);
 
 // Inicializar vistas al arrancar
 initAdminSession();
-console.log('Escombros Rojas Web App: Inicialización de sesión completada.');
+console.log('Escombros Amaury Rojas Web App: Inicialización de sesión completada.');
 
 // ==========================================
 // MODALES DE CUMPLIMIENTO (PRIVACIDAD Y TÉRMINOS)

@@ -1,4 +1,4 @@
-/* Paleta de Colores y Variables de Diseño (Gris Claro / Blanco con Rojo) */
+﻿/* Paleta de Colores y Variables de Diseño (Gris Claro / Blanco con Rojo) */
 :root {
   --bg-primary: #f8f9fc;
   --bg-secondary: #ffffff;
@@ -76,7 +76,7 @@ h1, h2, h3, h4 {
   font-family: 'Outfit', sans-serif;
   font-size: 22px;
   font-weight: 900;
-  color: #ffffff; /* Escombros Rojas en blanco */
+  color: #ffffff; /* Escombros Amaury Rojas en blanco */
   line-height: 1.1;
   letter-spacing: 0.05em;
   border-bottom: 2px solid var(--accent-red);

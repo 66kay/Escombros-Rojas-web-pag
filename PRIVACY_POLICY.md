@@ -1,13 +1,13 @@
-# POLÍTICA DE PRIVACIDAD
-## PROYECTO: ESCOMBROS ROJAS — RETIRO DE ESCOMBROS Y VENTA DE ÁRIDOS
+﻿# POLÍTICA DE PRIVACIDAD
+## PROYECTO: ESCOMBROS AMAURY ROJAS — RETIRO DE ESCOMBROS Y VENTA DE ÁRIDOS
 **Última actualización: Agosto 2026**
 
-La presente Política de Privacidad describe cómo **Escombros Rojas** (en adelante, la "Empresa"), recopila, utiliza, procesa y protege los datos personales de los usuarios (en adelante, el "Usuario") que contactan a la Empresa a través del formulario del sitio web o canales directos, de conformidad con la Ley N° 19.628 sobre Protección de la Vida Privada (Chile) y los lineamientos de la norma internacional **ISO/IEC 27001**.
+La presente Política de Privacidad describe cómo **Escombros Amaury Rojas** (en adelante, la "Empresa"), recopila, utiliza, procesa y protege los datos personales de los usuarios (en adelante, el "Usuario") que contactan a la Empresa a través del formulario del sitio web o canales directos, de conformidad con la Ley N° 19.628 sobre Protección de la Vida Privada (Chile) y los lineamientos de la norma internacional **ISO/IEC 27001**.
 
 ---
 
 ### 1. Responsable del Tratamiento de Datos
-* **Nombre Comercial:** Escombros Rojas
+* **Nombre Comercial:** Escombros Amaury Rojas
 * **Dirección Física:** Av. Clotario Blest 2650, Santiago, Región Metropolitana
 * **Correo de Contacto:** contacto@escombrosrojas.cl
 

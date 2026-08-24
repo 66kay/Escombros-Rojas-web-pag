@@ -1,8 +1,8 @@
-# TÉRMINOS Y CONDICIONES DEL SERVICIO
-## PROYECTO: ESCOMBROS ROJAS — RETIRO DE ESCOMBROS Y VENTA DE ÁRIDOS
+﻿# TÉRMINOS Y CONDICIONES DEL SERVICIO
+## PROYECTO: ESCOMBROS AMAURY ROJAS — RETIRO DE ESCOMBROS Y VENTA DE ÁRIDOS
 **Última actualización: Agosto 2026**
 
-Los presentes Términos y Condiciones regulan la prestación de los servicios de retiro de escombros, rebaje de terrenos, demoliciones y venta de áridos a domicilio ofrecidos por **Escombros Rojas** (en adelante, la "Empresa") a sus clientes (en adelante, el "Cliente"). Al solicitar una cotización o contratar un servicio, el Cliente acepta de manera íntegra y sin reservas los presentes términos.
+Los presentes Términos y Condiciones regulan la prestación de los servicios de retiro de escombros, rebaje de terrenos, demoliciones y venta de áridos a domicilio ofrecidos por **Escombros Amaury Rojas** (en adelante, la "Empresa") a sus clientes (en adelante, el "Cliente"). Al solicitar una cotización o contratar un servicio, el Cliente acepta de manera íntegra y sin reservas los presentes términos.
 
 ---
 
