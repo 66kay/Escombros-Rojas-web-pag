@@ -629,7 +629,7 @@ h1, h2, h3, h4 {
 
 .contact-section {
   width: 100%;
-  background: linear-gradient(rgba(241, 245, 249, 0.58), rgba(241, 245, 249, 0.58)), url('/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.55.webp') no-repeat center center;
+  background: linear-gradient(rgba(241, 245, 249, 0.58), rgba(241, 245, 249, 0.58)), url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=1920&q=80') no-repeat center center;
   background-size: cover;
   background-position: center;
   background-attachment: scroll;
