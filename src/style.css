@@ -1052,6 +1052,49 @@ h1, h2, h3, h4 {
   }
 }
 
+/* Reglas especiales para pantallas medianas y móviles (diseño compacto) */
+@media (max-width: 768px) {
+  /* Ocultar contador en el header para evitar colisiones en pantallas chicas */
+  .visitor-counter-header {
+    display: none !important;
+  }
+  
+  /* Ajustar tamaño del logotipo */
+  .logo-text {
+    font-size: 16px !important;
+  }
+  .logo-subtext {
+    font-size: 8px !important;
+  }
+  
+  /* Botón de Whatsapp del Header más compacto */
+  .btn-whatsapp-header {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+  }
+  
+  /* Ajustes en sección "Contáctanos Directo" para pantallas chicas */
+  .quote-cta-card {
+    padding: 24px 16px !important;
+  }
+  .quote-cta-card h3 {
+    font-size: 18px !important;
+  }
+  .quote-cta-card p {
+    margin-bottom: 16px !important;
+  }
+  
+  /* Botones de contacto más estilizados y compactos */
+  .btn-whatsapp-cta, .btn-phone-cta {
+    font-size: 13px !important;
+    padding: 10px 12px !important;
+  }
+  .btn-icon-inner {
+    font-size: 18px !important;
+    margin-right: 4px !important;
+  }
+}
+
 @media (max-width: 576px) {
   .hero-title {
     font-size: 32px;
