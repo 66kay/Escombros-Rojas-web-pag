@@ -178,9 +178,14 @@ selectServiceBtns.forEach(btn => {
     }
     const contactSection = document.getElementById('contact');
     if (contactSection) {
-      const headerOffset = 80;
-      const elementPosition = contactSection.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      const badge = contactSection.querySelector('.section-badge');
+      let offsetPosition;
+      if (badge) {
+        const badgeTop = badge.getBoundingClientRect().top + window.pageYOffset;
+        offsetPosition = badgeTop - 135; // 80px cabecera + 55px (aprox 1.5cm) de margen
+      } else {
+        offsetPosition = contactSection.getBoundingClientRect().top + window.pageYOffset - 80;
+      }
 
       customSmoothScrollTo(offsetPosition, 550);
     }
@@ -542,9 +547,36 @@ navLinks.forEach(link => {
       
       const targetEl = document.querySelector(targetId);
       if (targetEl) {
-        const headerOffset = 80;
-        const elementPosition = targetEl.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        let offsetPosition;
+        
+        if (targetId === '#services') {
+          const badge = targetEl.querySelector('.section-badge');
+          if (badge) {
+            const badgeTop = badge.getBoundingClientRect().top + window.pageYOffset;
+            offsetPosition = badgeTop - 115; // 80px cabecera + 35px (aprox 1cm) de margen
+          } else {
+            offsetPosition = targetEl.getBoundingClientRect().top + window.pageYOffset - 80;
+          }
+        } else if (targetId === '#contact') {
+          const badge = targetEl.querySelector('.section-badge');
+          if (badge) {
+            const badgeTop = badge.getBoundingClientRect().top + window.pageYOffset;
+            offsetPosition = badgeTop - 135; // 80px cabecera + 55px (aprox 1.5cm) de margen
+          } else {
+            offsetPosition = targetEl.getBoundingClientRect().top + window.pageYOffset - 80;
+          }
+        } else if (targetId === '#gallery') {
+          const badge = targetEl.querySelector('.section-badge');
+          if (badge) {
+            const badgeTop = badge.getBoundingClientRect().top + window.pageYOffset;
+            offsetPosition = badgeTop - 150; // 80px cabecera + 70px (2cm) de margen
+          } else {
+            offsetPosition = targetEl.getBoundingClientRect().top + window.pageYOffset - 80;
+          }
+        } else {
+          // Presupuesto y otros no se tocan (se alinean a ras: 80px)
+          offsetPosition = targetEl.getBoundingClientRect().top + window.pageYOffset - 80;
+        }
 
         // Desactivar temporalmente la actualización automática del scrollspy
         isScrollingFromClick = true;
