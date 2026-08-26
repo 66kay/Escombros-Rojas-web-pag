@@ -54,7 +54,7 @@ h1, h2, h3, h4 {
   left: 0;
   width: 100%;
   z-index: 999;
-  background: rgba(26, 28, 35, 0.85);
+  background: rgba(26, 28, 35, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid #2d313f;
