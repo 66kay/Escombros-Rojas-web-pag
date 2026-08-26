@@ -665,13 +665,13 @@ h1, h2, h3, h4 {
 .detail-icon {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  width: 54px;
-  height: 54px;
+  width: 56px;
+  height: 56px;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 40px;
   box-shadow: var(--shadow-sm);
 }
 
