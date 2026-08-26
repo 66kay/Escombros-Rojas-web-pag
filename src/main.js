@@ -1,8 +1,49 @@
-﻿import './style.css';
+import './style.css';
 
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:3000'
   : '';
+
+// Función para realizar un desplazamiento suave (smooth scroll) manual por software
+// Esto soluciona problemas donde el navegador tiene el scroll suave desactivado o ignora 'behavior: smooth'
+function customSmoothScrollTo(targetPosition, duration = 800) {
+  const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+  const distance = targetPosition - startPosition;
+  let startTime = null;
+
+  function animation(currentTime) {
+    if (startTime === null) startTime = currentTime;
+    const timeElapsed = currentTime - startTime;
+    const run = easeInOutQuad(timeElapsed, startPosition, distance, duration);
+    window.scrollTo(0, run);
+    if (timeElapsed < duration) {
+      requestAnimationFrame(animation);
+    } else {
+      window.scrollTo(0, targetPosition); // Asegurar posición exacta final
+    }
+  }
+
+  function easeInOutQuad(t, b, c, d) {
+    t /= d / 2;
+    if (t < 1) return c / 2 * t * t + b;
+    t--;
+    return -c / 2 * (t * (t - 2) - 1) + b;
+  }
+
+  requestAnimationFrame(animation);
+}
+
+// Función para sanitizar HTML en el cliente (prevención de XSS - Defensa en Profundidad)
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/\//g, '&#x2F;');
+}
 
 
 // ==========================================
@@ -130,10 +171,18 @@ selectServiceBtns.forEach(btn => {
     const formServiceSelect = document.getElementById('form-service');
     if (formServiceSelect) {
       formServiceSelect.value = serviceName;
+      // Reiniciar animación de pulso de realce
+      formServiceSelect.classList.remove('pulse-highlight');
+      void formServiceSelect.offsetWidth; // Forzar reflow
+      formServiceSelect.classList.add('pulse-highlight');
     }
     const contactSection = document.getElementById('contact');
     if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
+      const headerOffset = 80;
+      const elementPosition = contactSection.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      customSmoothScrollTo(offsetPosition, 450);
     }
   });
 });
@@ -251,7 +300,7 @@ async function fetchDatabaseRecords() {
     if (records.length === 0) {
       dbEntriesBody.innerHTML = `
         <tr>
-          <td colspan="6" class="table-empty-msg">No hay solicitudes registradas en la base de datos.</td>
+          <td colspan="7" class="table-empty-msg">No hay solicitudes registradas en la base de datos.</td>
         </tr>
       `;
       return;
@@ -263,26 +312,56 @@ async function fetchDatabaseRecords() {
       const dateStr = new Date(item.fecha).toLocaleString('es-CL');
       
       row.innerHTML = `
-        <td><strong>${dateStr}</strong></td>
-        <td>${item.nombre}</td>
+        <td><strong>${escapeHTML(dateStr)}</strong></td>
+        <td>${escapeHTML(item.nombre)}</td>
         <td>
-          <span style="color:#e63946;font-weight:600;">${item.telefono}</span>
+          <span style="color:#e63946;font-weight:600;">${escapeHTML(item.telefono)}</span>
           <br><small style="color:#64748b;font-size:9px;">[Cifrado AES-256 Descifrado al Vuelo]</small>
         </td>
         <td>
-          <span>${item.email || '—'}</span>
+          <span>${item.email ? escapeHTML(item.email) : '—'}</span>
           ${item.email ? `<br><small style="color:#64748b;font-size:9px;">[Cifrado AES-256 Descifrado al Vuelo]</small>` : ''}
         </td>
-        <td><span class="calc-vol-badge" style="background-color:#d90429; color:white;">${item.servicio}</span></td>
-        <td><div style="max-width:260px;white-space:normal;word-break:break-all;">${item.mensaje}</div></td>
+        <td><span class="calc-vol-badge" style="background-color:#d90429; color:white;">${escapeHTML(item.servicio)}</span></td>
+        <td><div style="max-width:260px;white-space:normal;word-break:break-all;">${escapeHTML(item.mensaje)}</div></td>
+        <td>
+          <button class="btn-delete-record" data-id="${item.id}" style="background-color:#d90429; color:white; border:none; padding:6px 12px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:700; transition:var(--transition-smooth); box-shadow:0 2px 4px rgba(217,4,41,0.2);">
+            ❌ Eliminar
+          </button>
+        </td>
       `;
+
+      // Registrar evento para eliminar registro de forma interactiva
+      const deleteBtn = row.querySelector('.btn-delete-record');
+      deleteBtn.addEventListener('click', async () => {
+        if (confirm(`¿Estás seguro de que deseas eliminar permanentemente la solicitud de "${item.nombre}"?`)) {
+          try {
+            const deleteRes = await fetch(`${API_BASE_URL}/api/contact/${item.id}`, {
+              method: 'DELETE',
+              headers: {
+                'x-admin-key': key
+              }
+            });
+            if (deleteRes.ok) {
+              // Recargar la tabla tras eliminación exitosa
+              loadDecryptedRecords(key);
+            } else {
+              const errData = await deleteRes.json();
+              alert(`Error al eliminar: ${errData.error}`);
+            }
+          } catch (err) {
+            alert('Error de red al intentar eliminar el registro.');
+          }
+        }
+      });
+
       dbEntriesBody.appendChild(row);
     });
 
   } catch (error) {
     dbEntriesBody.innerHTML = `
       <tr>
-        <td colspan="6" class="table-empty-msg" style="color:var(--accent-red);">
+        <td colspan="7" class="table-empty-msg" style="color:var(--accent-red);">
           Error al conectar con la base de datos segura o clave expirada.
         </td>
       </tr>
@@ -337,25 +416,28 @@ const modalTerms = document.getElementById('modal-terms-conditions');
 
 const linkPrivacy = document.getElementById('link-privacy-policy');
 const linkTerms = document.getElementById('link-terms-conditions');
+const linkPrivacyFooter = document.getElementById('footer-link-privacy');
+const linkTermsFooter = document.getElementById('footer-link-terms');
 
 const btnClosePrivacy = document.getElementById('btn-close-privacy');
 const btnClosePrivacyOk = document.getElementById('btn-close-privacy-ok');
 const btnCloseTerms = document.getElementById('btn-close-terms');
 const btnCloseTermsOk = document.getElementById('btn-close-terms-ok');
 
-if (linkPrivacy && modalPrivacy) {
-  linkPrivacy.addEventListener('click', (e) => {
-    e.preventDefault();
-    modalPrivacy.showModal();
-  });
-}
+const openPrivacyModal = (e) => {
+  e.preventDefault();
+  modalPrivacy && modalPrivacy.showModal();
+};
 
-if (linkTerms && modalTerms) {
-  linkTerms.addEventListener('click', (e) => {
-    e.preventDefault();
-    modalTerms.showModal();
-  });
-}
+const openTermsModal = (e) => {
+  e.preventDefault();
+  modalTerms && modalTerms.showModal();
+};
+
+if (linkPrivacy && modalPrivacy) linkPrivacy.addEventListener('click', openPrivacyModal);
+if (linkPrivacyFooter && modalPrivacy) linkPrivacyFooter.addEventListener('click', openPrivacyModal);
+if (linkTerms && modalTerms) linkTerms.addEventListener('click', openTermsModal);
+if (linkTermsFooter && modalTerms) linkTermsFooter.addEventListener('click', openTermsModal);
 
 const closePrivacy = () => modalPrivacy && modalPrivacy.close();
 const closeTerms = () => modalTerms && modalTerms.close();
@@ -378,3 +460,129 @@ if (btnCloseTermsOk) btnCloseTermsOk.addEventListener('click', closeTerms);
     });
   }
 });
+
+// ==========================================
+// TRANSICIONES DE NAVEGACIÓN FLUIDAS (SMOOTH SCROLL & INDICATOR SLIDER)
+// ==========================================
+const navMenu = document.querySelector('.nav-menu');
+const navLinks = document.querySelectorAll('.nav-link');
+const navIndicator = document.querySelector('.nav-indicator');
+
+// Función para mover el subrayado deslizante
+function moveIndicator(activeLink) {
+  if (!navIndicator || !activeLink || !navMenu) return;
+  const menuRect = navMenu.getBoundingClientRect();
+  const linkRect = activeLink.getBoundingClientRect();
+  
+  navIndicator.style.width = `${linkRect.width}px`;
+  navIndicator.style.left = `${linkRect.left - menuRect.left}px`;
+}
+
+// Inicializar posición al cargar y al redimensionar la ventana
+function initIndicator() {
+  const activeLink = document.querySelector('.nav-link.active') || document.querySelector('.nav-link');
+  if (activeLink) {
+    moveIndicator(activeLink);
+  }
+}
+
+// Escuchar cambios de tamaño de ventana para ajustar el indicador
+window.addEventListener('resize', initIndicator);
+// Retrasar inicialización para asegurar la carga completa de fuentes y estilos
+setTimeout(initIndicator, 150);
+
+// Scroll Spy: Detectar qué sección está activa según la posición de la pantalla
+const sections = document.querySelectorAll('section[id]');
+function scrollSpy() {
+  const scrollY = window.pageYOffset;
+  const headerOffset = 90; // Umbral de la cabecera
+
+  sections.forEach(current => {
+    const sectionHeight = current.offsetHeight;
+    const sectionTop = current.offsetTop - headerOffset;
+    const sectionId = current.getAttribute('id');
+    
+    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+      const activeLink = document.querySelector(`.nav-menu a[href*=${sectionId}]`);
+      if (activeLink && !activeLink.classList.contains('active')) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        activeLink.classList.add('active');
+        moveIndicator(activeLink);
+      }
+    }
+  });
+}
+window.addEventListener('scroll', scrollSpy);
+
+// Clic en los enlaces de navegación
+navLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    const targetId = link.getAttribute('href');
+    if (targetId.startsWith('#')) {
+      e.preventDefault();
+      
+      // Quitar scroll temporal para evitar conflicto visual de la transición
+      window.removeEventListener('scroll', scrollSpy);
+      
+      // Actualizar estado activo e indicador deslizante inmediatamente
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      moveIndicator(link);
+      
+      const targetEl = document.querySelector(targetId);
+      if (targetEl) {
+        const headerOffset = 80;
+        const elementPosition = targetEl.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        customSmoothScrollTo(offsetPosition, 500);
+      }
+      
+      // Volver a activar scrollSpy después de que termine el scroll (500ms)
+      setTimeout(() => {
+        window.addEventListener('scroll', scrollSpy);
+        scrollSpy();
+      }, 500);
+    }
+  });
+});
+
+// ==========================================
+// SEGUIMIENTO DE VISITAS (REAL Y ACUMULADA)
+// ==========================================
+async function trackVisit(isInitial = false) {
+  try {
+    const url = `${API_BASE_URL}/api/visits`;
+    const method = isInitial ? 'POST' : 'GET';
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+      const data = await response.json();
+      updateVisitorUI(data.activeOnline, data.totalPageViews);
+    }
+  } catch (error) {
+    console.error('Error al registrar visita:', error);
+  }
+}
+
+function updateVisitorUI(active, total) {
+  const onlineCounter = document.getElementById('online-counter');
+  const totalCounter = document.getElementById('total-counter');
+  const onlineCounterFooter = document.getElementById('online-counter-footer');
+  const totalCounterFooter = document.getElementById('total-counter-footer');
+
+  if (onlineCounter) onlineCounter.textContent = active;
+  if (totalCounter) totalCounter.textContent = total;
+  if (onlineCounterFooter) onlineCounterFooter.textContent = active;
+  if (totalCounterFooter) totalCounterFooter.textContent = total;
+}
+
+// Registrar visita (POST) al cargar la página por primera vez
+trackVisit(true);
+
+// Actualizar cantidad de usuarios activos en tiempo real cada 30 segundos usando GET (sin subir contador de visitas)
+setInterval(() => trackVisit(false), 30000);

@@ -4,20 +4,30 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
+
+// Cargar variables de entorno desde el archivo .env
+dotenv.config();
 
 // Resolver __dirname en ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+
+// Confianza en el Proxy Inverso (necesario para obtener la IP real del cliente detrás de Cloudflare, Heroku, Render, etc.)
+app.set('trust proxy', true);
+const PORT = process.env.PORT || 3000;
 
 // Configuración de cifrado (ISO 27001 - AES-256)
-const ENCRYPTION_KEY = crypto.createHash('sha256').update('mauri-secret-key-13579').digest(); // Clave de 32 bytes
+const rawKey = process.env.ENCRYPTION_KEY || 'mauri-secret-key-13579-default-fallback';
+const ENCRYPTION_KEY = crypto.createHash('sha256').update(rawKey).digest(); // Clave de 32 bytes de forma segura
 const IV_LENGTH = 16;
 
-// Hash SHA-256 de la contraseña "CLAVE_ADMIN_PLACEHOLDER" (ISO 27001 - Almacenamiento seguro de credenciales)
-const ADMIN_PASSKEY_HASH = 'HASH_ROTADO_POR_SEGURIDAD';
+// Hash SHA-256 de la contraseña del Administrador (ISO 27001 - Almacenamiento seguro de credenciales)
+const ADMIN_PASSKEY_HASH = process.env.ADMIN_PASSKEY_HASH || 'HASH_ROTADO_POR_SEGURIDAD';
 
 // Función para cifrar texto
 function encrypt(text) {
@@ -48,10 +58,33 @@ function decrypt(text) {
 // Archivos de almacenamiento
 const DB_FILE = path.join(__dirname, 'database.json');
 const LOG_FILE = path.join(__dirname, 'security_audit.log');
+const VISITS_FILE = path.join(__dirname, 'visits.json');
 
 // Inicializar archivos
 if (!fs.existsSync(DB_FILE)) {
   fs.writeFileSync(DB_FILE, JSON.stringify([], null, 2));
+}
+if (!fs.existsSync(VISITS_FILE)) {
+  fs.writeFileSync(VISITS_FILE, JSON.stringify({ totalPageViews: 0, uniqueIPs: [] }, null, 2));
+}
+
+// Control de visitas en memoria y persistente
+const activeUsers = new Map();
+
+function loadVisits() {
+  try {
+    return JSON.parse(fs.readFileSync(VISITS_FILE, 'utf8'));
+  } catch (e) {
+    return { totalPageViews: 0, uniqueIPs: [] };
+  }
+}
+
+function saveVisits(data) {
+  try {
+    fs.writeFileSync(VISITS_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error saving visits:', e);
+  }
 }
 
 // Helper para registro de Auditoría de Seguridad
@@ -82,8 +115,72 @@ function authorizeAdmin(req, res, next) {
   }
 }
 
-// Middleware
-app.use(cors());
+// ==========================================
+// CONFIGURACIÓN DE SEGURIDAD (HELMET, CORS, RATE LIMITS)
+// ==========================================
+
+// 1. Cabeceras de seguridad HTTP con Helmet (Configuración personalizada compatible con Google Fonts y Vite Dev)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "/fotosmauri/", "https://*"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      connectSrc: ["'self'", "http://localhost:3000", "ws://localhost:5173", "http://localhost:5173", "ws://127.0.0.1:5173", "http://127.0.0.1:5173", "http://127.0.0.1:3000"]
+    }
+  },
+  crossOriginEmbedderPolicy: false
+}));
+
+// 2. Control de CORS restringido a entornos locales de desarrollo y producción
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000'
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'El control CORS bloquea el acceso desde el origen especificado.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
+}));
+
+// 3. Limitadores de frecuencia de peticiones (Rate Limiting)
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 200, // Límite de 200 peticiones por ventana por IP
+  message: { error: 'Demasiadas solicitudes desde esta IP, por favor intenta más tarde.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 5, // Máximo 5 solicitudes de contacto por IP cada 15 minutos (anti-spam)
+  message: { error: 'Has excedido el límite de envíos de contacto. Por favor, espera 15 minutos antes de volver a intentarlo.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const visitsLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 15, // Máximo 15 peticiones por minuto para el contador
+  message: { error: 'Abuso de consultas de visitas detectado.' },
+  standardHeaders: false,
+  legacyHeaders: false,
+});
+
+// Aplicar limitador global
+app.use(globalLimiter);
+
+// Parsear JSON
 app.use(express.json());
 
 // Sanitización de entradas básicas XSS
@@ -103,7 +200,7 @@ function sanitizeInput(text) {
 // ==========================================
 
 // Registrar una nueva solicitud
-app.post('/api/contact', (e, r) => {
+app.post('/api/contact', contactLimiter, (e, r) => {
   const ip = e.ip || e.connection.remoteAddress;
   
   try {
@@ -175,6 +272,31 @@ app.get('/api/contact', authorizeAdmin, (e, r) => {
   }
 });
 
+// Eliminar una solicitud por ID (Requiere autorización)
+app.delete('/api/contact/:id', authorizeAdmin, (req, res) => {
+  const ip = req.ip || req.connection.remoteAddress;
+  const requestId = req.params.id;
+
+  try {
+    const dbData = JSON.parse(fs.readFileSync(DB_FILE));
+    const initialLength = dbData.length;
+    const filteredData = dbData.filter(item => item.id !== requestId);
+
+    if (filteredData.length === initialLength) {
+      logSecurityEvent('WARN', `Intento de eliminar ID inexistente: ${requestId}`, ip);
+      return res.status(404).json({ error: 'La solicitud no existe.' });
+    }
+
+    fs.writeFileSync(DB_FILE, JSON.stringify(filteredData, null, 2));
+    logSecurityEvent('INFO', `Solicitud eliminada correctamente. ID: ${requestId}`, ip);
+
+    res.json({ success: true, message: 'Solicitud eliminada correctamente.' });
+  } catch (error) {
+    logSecurityEvent('ERROR', `Error al eliminar solicitud ${requestId}: ${error.message}`, ip);
+    res.status(500).json({ error: 'Error interno al intentar eliminar la solicitud.' });
+  }
+});
+
 // Obtener logs de auditoría (Requiere autorización)
 app.get('/api/audit', authorizeAdmin, (e, r) => {
   const ip = e.ip || e.connection.remoteAddress;
@@ -190,6 +312,64 @@ app.get('/api/audit', authorizeAdmin, (e, r) => {
   } catch (error) {
     r.status(500).json({ error: 'Error al cargar los logs.' });
   }
+});
+
+// Registrar visitas reales y acumuladas (Se llama al cargar la página)
+app.post('/api/visits', visitsLimiter, (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+  const now = Date.now();
+
+  // 1. Actualizar usuarios activos (IP -> timestamp)
+  activeUsers.set(clientIp, now);
+
+  // Limpiar usuarios inactivos (> 2 minutos)
+  for (const [ip, time] of activeUsers.entries()) {
+    if (now - time > 120000) {
+      activeUsers.delete(ip);
+    }
+  }
+
+  // 2. Cargar y actualizar visitas totales y únicas
+  const visitsData = loadVisits();
+  visitsData.totalPageViews = (visitsData.totalPageViews || 0) + 1;
+
+  // Hashing de IP para cumplimiento de privacidad ISO 27001 (anonimización)
+  const ipHash = crypto.createHash('sha256').update(clientIp).digest('hex');
+  if (!visitsData.uniqueIPs.includes(ipHash)) {
+    visitsData.uniqueIPs.push(ipHash);
+  }
+
+  saveVisits(visitsData);
+
+  res.json({
+    activeOnline: activeUsers.size,
+    totalPageViews: visitsData.totalPageViews,
+    totalUniqueVisitors: visitsData.uniqueIPs.length
+  });
+});
+
+// Obtener estado actual de visitas sin registrar una nueva vista (Se llama para polling)
+app.get('/api/visits', visitsLimiter, (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+  const now = Date.now();
+
+  // Mantener al usuario actual en la lista de activos
+  activeUsers.set(clientIp, now);
+
+  // Limpiar usuarios inactivos (> 2 minutos)
+  for (const [ip, time] of activeUsers.entries()) {
+    if (now - time > 120000) {
+      activeUsers.delete(ip);
+    }
+  }
+
+  const visitsData = loadVisits();
+
+  res.json({
+    activeOnline: activeUsers.size,
+    totalPageViews: visitsData.totalPageViews,
+    totalUniqueVisitors: visitsData.uniqueIPs.length
+  });
 });
 
 // Servir archivos estáticos del frontend en producción (carpeta dist generada por Vite)

@@ -23,8 +23,14 @@
           <a href="#gallery" class="nav-link">Galería</a>
           <a href="#quote-info" class="nav-link">Presupuestos</a>
           <a href="#contact" class="nav-link">Contacto</a>
+          <div class="nav-indicator"></div>
         </nav>
-        <div class="nav-actions">
+        <div class="nav-actions" style="display:flex; align-items:center; gap:15px;">
+          <!-- Contador de Visitas Real-time (Arriba a la Derecha) -->
+          <div class="visitor-counter-header" style="display:flex; flex-direction:column; font-size:11px; color:#a0aec0; text-align:right; font-family:'Inter', sans-serif; line-height:1.3; font-weight:500;">
+            <div>🟢 <span id="online-counter" style="color:#25d366; font-weight:700; font-family:monospace;">--</span> en línea</div>
+            <div>👥 <span id="total-counter" style="color:#ffffff; font-weight:700; font-family:monospace;">--</span> visitas</div>
+          </div>
           <a href="https://wa.me/56983274339?text=Hola,%20quisiera%20cotizar%20un%20servicio%20de%20escombros/áridos" target="_blank" class="btn-whatsapp-header">
             <svg class="wsp-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.488 1.459 5.416 1.46h.007c5.564 0 10.093-4.52 10.096-10.077.001-2.693-1.045-5.225-2.946-7.127C17.31 1.507 14.783.462 12.016.462c-5.568 0-10.096 4.519-10.1 10.079a9.98 9.98 0 0 0 1.534 5.22l-.994 3.63 3.722-.976zm10.655-6.732c-.294-.148-1.743-.86-2.012-.958-.269-.098-.465-.148-.66.148-.196.294-.758.958-.93 1.15-.173.196-.347.219-.64.074-.294-.148-1.24-.457-2.362-1.458-.873-.779-1.463-1.74-1.635-2.036-.172-.294-.019-.453.128-.601.133-.133.294-.347.44-.52.148-.173.196-.294.294-.49.098-.196.05-.367-.025-.515-.074-.148-.66-1.59-.905-2.18-.239-.575-.483-.497-.66-.505l-.564-.007c-.196 0-.514.074-.783.367-.269.294-1.027 1.004-1.027 2.447 0 1.442 1.05 2.837 1.196 3.033.148.196 2.067 3.156 5.008 4.428.699.303 1.246.484 1.67.62.703.223 1.343.192 1.85.116.564-.085 1.743-.711 1.988-1.396.246-.686.246-1.274.172-1.396-.073-.122-.268-.196-.563-.344z"/></svg>
             Contacto Directo
@@ -39,7 +45,7 @@
         <div class="hero-content">
           <span class="hero-tagline">Escombros Amaury Rojas, tu solución más rápida</span>
           <h1 class="hero-title">Retiro de Escombros y Venta de Áridos</h1>
-          <p class="hero-subtitle">Proporcionamos camiones tolva para el retiro de escombros con maquinaria, realizamos rebajes de terreno y demolición. Ofrecemos áridos de alta calidad con despacho rápido a domicilio y cumplimiento garantizado a toda la Región Metropolitana.</p>
+          <p class="hero-subtitle">Con más de 10 años de trayectoria en el rubro, proporcionamos camiones tolva para el retiro de escombros con maquinaria, realizamos rebajes de terreno y demolición. Ofrecemos áridos de alta calidad con despacho rápido a domicilio y cumplimiento garantizado a toda la Región Metropolitana.</p>
           <div class="hero-actions">
             <a href="#contact" class="btn-red">Solicitar Cotización</a>
             <a href="#services" class="btn-outline-dark">Ver Servicios</a>
@@ -47,10 +53,95 @@
         </div>
         <div class="hero-image-panel">
           <div class="hero-card-image">
-            <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.00.jpeg" alt="Maquinaria de Escombros Amaury Rojas" />
+            <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.00.webp" alt="Maquinaria de Escombros Amaury Rojas" />
             <div class="hero-card-badge">Operaciones en Terreno</div>
           </div>
         </div>
+      </div>
+    </section>
+
+<!-- Services Section -->
+    <section id="services" class="services-section">
+      <div class="services-container">
+        <div class="section-header">
+        <span class="section-badge">Servicios Profesionales</span>
+        <h2 class="section-title">Qué Ofrecemos en Terreno</h2>
+        <p class="section-subtitle">Operamos con equipos mecánicos y manuales para asegurar retiros rápidos y despachos puntuales de áridos.</p>
+      </div>
+
+      <div class="services-grid">
+        <!-- Servicio 1 -->
+        <article class="service-card">
+          <div class="service-img-wrapper">
+             <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.34.27.webp" alt="Retiro de Escombros" />
+          </div>
+          <div class="service-body">
+            <h3>Retiro de Escombros</h3>
+            <p>Retiro de escombros de hormigón, ladrillo, tierra suelta, madera y excedentes de obras. Contenedores disponibles y carga mecanizada.</p>
+            <ul class="service-bullets">
+              <li>Carga manual y minicargadores</li>
+              <li>Limpieza de terrenos y despeje</li>
+              <li>Certificación de disposición legal</li>
+            </ul>
+            
+            <!-- Accesos Directos -->
+            <div class="service-actions-flex" style="display:flex; gap:10px; margin-top:24px;">
+              <a href="#contact" class="btn-select-service btn-red btn-sm btn-full-width" data-service="Retiro de Escombros" style="font-size:11px; padding:10px 8px; text-align:center; text-decoration:none;">Cotizar Formulario</a>
+              <a href="https://wa.me/56983274339?text=Hola,%20quisiera%20cotizar%20el%20servicio%20de%20Retiro%20de%20Escombros" target="_blank" class="btn-whatsapp-cta btn-sm btn-full-width" style="font-size:11px; padding:10px 8px; text-align:center; background-color:#25d366; color:white; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; font-weight:600; box-shadow:none; height:auto;">
+                <span class="emoji-large">💬</span> WhatsApp
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Servicio 2 -->
+        <article class="service-card">
+          <div class="service-img-wrapper">
+            <img src="/images/aridos_collage.jpg" alt="Venta de Áridos Mezclados" />
+          </div>
+          <div class="service-body">
+            <h3>Venta de Áridos</h3>
+            <p>Suministro y despacho directo de áridos para construcción. Arena gruesa, arena fina, gravilla de 3/4, estabilizados y tierra de hojas.</p>
+            <ul class="service-bullets">
+              <li>Despacho en camiones tolva</li>
+              <li>Medidas volumétricas reales</li>
+              <li>Excelente compactación y textura</li>
+            </ul>
+            
+            <!-- Accesos Directos -->
+            <div class="service-actions-flex" style="display:flex; gap:10px; margin-top:24px;">
+              <a href="#contact" class="btn-select-service btn-red btn-sm btn-full-width" data-service="Venta de Árido: Arena" style="font-size:11px; padding:10px 8px; text-align:center; text-decoration:none;">Cotizar Formulario</a>
+              <a href="https://wa.me/56983274339?text=Hola,%20quisiera%20cotizar%20el%20servicio%20de%20Venta%20de%20Áridos" target="_blank" class="btn-whatsapp-cta btn-sm btn-full-width" style="font-size:11px; padding:10px 8px; text-align:center; background-color:#25d366; color:white; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; font-weight:600; box-shadow:none; height:auto;">
+                <span class="emoji-large">💬</span> WhatsApp
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Servicio 3 -->
+        <article class="service-card">
+          <div class="service-img-wrapper">
+            <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.39.webp" alt="Rebajes de terrenos y demoliciones" />
+          </div>
+          <div class="service-body">
+            <h3>Rebajes de terrenos y demoliciones</h3>
+            <p>Preparación de terrenos para obras residenciales e industriales, rebaje de pendientes, nivelación y demolición limpia de estructuras.</p>
+            <ul class="service-bullets">
+              <li>Rebajes mecánicos y manuales</li>
+              <li>Demolición segura de estructuras</li>
+              <li>Retiro de excedentes inmediato</li>
+            </ul>
+            
+            <!-- Accesos Directos -->
+            <div class="service-actions-flex" style="display:flex; gap:10px; margin-top:24px;">
+              <a href="#contact" class="btn-select-service btn-red btn-sm btn-full-width" data-service="Rebajes de terrenos y demoliciones" style="font-size:11px; padding:10px 8px; text-align:center; text-decoration:none;">Cotizar Formulario</a>
+              <a href="https://wa.me/56983274339?text=Hola,%20quisiera%20cotizar%20el%20servicio%20de%20Rebajes%20de%20terrenos%20y%20demoliciones" target="_blank" class="btn-whatsapp-cta btn-sm btn-full-width" style="font-size:11px; padding:10px 8px; text-align:center; background-color:#25d366; color:white; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; font-weight:600; box-shadow:none; height:auto;">
+                <span class="emoji-large">💬</span> WhatsApp
+              </a>
+            </div>
+          </div>
+        </article>
+      </div>
       </div>
     </section>
 
@@ -77,146 +168,6 @@
             <strong>Disposición Legal</strong>
             <span>Botaderos autorizados por el SEREMI</span>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Services Section -->
-    <section id="services" class="services-section">
-      <div class="section-header">
-        <span class="section-badge">Servicios Profesionales</span>
-        <h2 class="section-title">Qué Ofrecemos en Terreno</h2>
-        <p class="section-subtitle">Operamos con equipos mecánicos y manuales para asegurar retiros rápidos y despachos puntuales de áridos.</p>
-      </div>
-
-      <div class="services-grid">
-        <!-- Servicio 1 -->
-        <article class="service-card">
-          <div class="service-img-wrapper">
-             <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.34.27.jpeg" alt="Retiro de Escombros" />
-          </div>
-          <div class="service-body">
-            <h3>Retiro de Escombros</h3>
-            <p>Retiro de escombros de hormigón, ladrillo, tierra suelta, madera y excedentes de obras. Contenedores disponibles y carga mecanizada.</p>
-            <ul class="service-bullets">
-              <li>Carga manual y minicargadores</li>
-              <li>Limpieza de terrenos y despeje</li>
-              <li>Certificación de disposición legal</li>
-            </ul>
-            
-            <!-- Accesos Directos -->
-            <div class="service-actions-flex" style="display:flex; gap:10px; margin-top:24px;">
-              <a href="#contact" class="btn-select-service btn-red btn-sm btn-full-width" data-service="Retiro de Escombros" style="font-size:11px; padding:10px 8px; text-align:center; text-decoration:none;">Cotizar Formulario</a>
-              <a href="https://wa.me/56983274339?text=Hola,%20quisiera%20cotizar%20el%20servicio%20de%20Retiro%20de%20Escombros" target="_blank" class="btn-whatsapp-cta btn-sm btn-full-width" style="font-size:11px; padding:10px 8px; text-align:center; background-color:#25d366; color:white; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; font-weight:600; box-shadow:none; height:auto;">
-                💬 WhatsApp
-              </a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Servicio 2 -->
-        <article class="service-card">
-          <div class="service-img-wrapper">
-            <img src="/images/aridos_collage.jpg" alt="Venta de Áridos Mezclados" />
-          </div>
-          <div class="service-body">
-            <h3>Venta de Áridos</h3>
-            <p>Suministro y despacho directo de áridos para construcción. Arena gruesa, arena fina, gravilla de 3/4, estabilizados y tierra de hojas.</p>
-            <ul class="service-bullets">
-              <li>Despacho en camiones tolva</li>
-              <li>Medidas volumétricas reales</li>
-              <li>Excelente compactación y textura</li>
-            </ul>
-            
-            <!-- Accesos Directos -->
-            <div class="service-actions-flex" style="display:flex; gap:10px; margin-top:24px;">
-              <a href="#contact" class="btn-select-service btn-red btn-sm btn-full-width" data-service="Venta de Árido: Arena" style="font-size:11px; padding:10px 8px; text-align:center; text-decoration:none;">Cotizar Formulario</a>
-              <a href="https://wa.me/56983274339?text=Hola,%20quisiera%20cotizar%20el%20servicio%20de%20Venta%20de%20Áridos" target="_blank" class="btn-whatsapp-cta btn-sm btn-full-width" style="font-size:11px; padding:10px 8px; text-align:center; background-color:#25d366; color:white; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; font-weight:600; box-shadow:none; height:auto;">
-                💬 WhatsApp
-              </a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Servicio 3 -->
-        <article class="service-card">
-          <div class="service-img-wrapper">
-            <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.39.jpeg" alt="Rebajes de terrenos y demoliciones" />
-          </div>
-          <div class="service-body">
-            <h3>Rebajes de terrenos y demoliciones</h3>
-            <p>Preparación de terrenos para obras residenciales e industriales, rebaje de pendientes, nivelación y demolición limpia de estructuras.</p>
-            <ul class="service-bullets">
-              <li>Rebajes mecánicos y manuales</li>
-              <li>Demolición segura de estructuras</li>
-              <li>Retiro de excedentes inmediato</li>
-            </ul>
-            
-            <!-- Accesos Directos -->
-            <div class="service-actions-flex" style="display:flex; gap:10px; margin-top:24px;">
-              <a href="#contact" class="btn-select-service btn-red btn-sm btn-full-width" data-service="Rebajes de terrenos y demoliciones" style="font-size:11px; padding:10px 8px; text-align:center; text-decoration:none;">Cotizar Formulario</a>
-              <a href="https://wa.me/56983274339?text=Hola,%20quisiera%20cotizar%20el%20servicio%20de%20Rebajes%20de%20terrenos%20y%20demoliciones" target="_blank" class="btn-whatsapp-cta btn-sm btn-full-width" style="font-size:11px; padding:10px 8px; text-align:center; background-color:#25d366; color:white; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:4px; font-weight:600; box-shadow:none; height:auto;">
-                💬 WhatsApp
-              </a>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- Galería Real (fotosmauri) -->
-    <section id="gallery" class="gallery-section">
-      <div class="section-header">
-        <span class="section-badge">Trabajos Recientes</span>
-        <h2 class="section-title">Colección de Fotos</h2>
-        <p class="section-subtitle">Registro visual directo de carguío, flota de camiones tolva, y retiro de escombros en obras residenciales e industriales.</p>
-      </div>
-
-      <div class="gallery-grid">
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.28.jpeg" alt="Operación de Camión Tolva" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.30.jpeg" alt="Minicargador cargando escombros" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.31 (1).jpeg" alt="Áridos listos para despacho" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.34.jpeg" alt="Retiro de escombros manual" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.35.jpeg" alt="Camión tolva descargando material" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.36.jpeg" alt="Maquinaria retroexcavadora en faena" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.23.41.jpeg" alt="Maquinaria en terreno" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.55.jpeg" alt="Minicargador en terreno" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.55 (1).jpeg" alt="Camión tolva y excavadora" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.56.jpeg" alt="Flota de camiones" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.56 (1).jpeg" alt="Despacho de arena" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.56 (2).jpeg" alt="Demolición en terreno" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.56 (3).jpeg" alt="Acopio de materiales" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.34.26.jpeg" alt="Maquinaria y tolva" />
-        </div>
-        <div class="gallery-item">
-          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.34.27.jpeg" alt="Maquinaria en faena principal" />
         </div>
       </div>
     </section>
@@ -268,7 +219,7 @@
               <span class="detail-icon">✉️</span>
               <div>
                 <strong>Correo Electrónico</strong>
-                <span>contacto@escombrosrojas.cl</span>
+                <span>contacto@escombrosamauryrojas.cl</span>
               </div>
             </div>
             <div class="contact-detail-item">
@@ -353,11 +304,68 @@
       </div>
     </section>
 
+    <!-- Galería Real (fotosmauri) -->
+    <section id="gallery" class="gallery-section">
+      <div class="section-header">
+        <span class="section-badge">Trabajos Recientes</span>
+        <h2 class="section-title">Colección de Fotos</h2>
+        <p class="section-subtitle">Registro visual directo de carguío, flota de camiones tolva, y retiro de escombros en obras residenciales e industriales.</p>
+      </div>
+
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.28.webp" alt="Operación de Camión Tolva" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.30.webp" alt="Minicargador cargando escombros" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.31 (1).jpeg" alt="Áridos listos para despacho" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.34.webp" alt="Retiro de escombros manual" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.35.webp" alt="Camión tolva descargando material" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.36.webp" alt="Maquinaria retroexcavadora en faena" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.23.41.webp" alt="Maquinaria en terreno" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.55.webp" alt="Minicargador en terreno" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.55 (1).jpeg" alt="Camión tolva y excavadora" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.56.webp" alt="Flota de camiones" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.56 (1).jpeg" alt="Despacho de arena" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.56 (2).jpeg" alt="Demolición en terreno" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.25.56 (3).jpeg" alt="Acopio de materiales" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.34.26.webp" alt="Maquinaria y tolva" />
+        </div>
+        <div class="gallery-item">
+          <img src="/fotosmauri/WhatsApp Image 2026-08-24 at 15.34.27.webp" alt="Maquinaria en faena principal" />
+        </div>
+      </div>
+    </section>
+
     <!-- Pie de Página de Cumplimiento Técnico -->
     <section class="compliance-footer-box">
       <div class="compliance-container">
         <details class="compliance-details" id="compliance-details-accordion">
-          <summary class="compliance-summary">🔒 Área Administrativa (Acceso Restringido)</summary>
+          <summary class="compliance-summary"><span class="emoji-large">🔒</span> Área Administrativa (Acceso Restringido)</summary>
           <div class="compliance-body-content">
             
             <!-- Caja de Inicio de Sesión de Administración -->
@@ -406,11 +414,12 @@
                           <th>Email (Descifrado al vuelo)</th>
                           <th>Servicio</th>
                           <th>Detalles / Mensaje</th>
+                          <th>Acciones</th>
                         </tr>
                       </thead>
                       <tbody id="db-entries-body">
                         <tr>
-                          <td colspan="6" class="table-empty-msg">Cargando registros descifrados desde base de datos segura...</td>
+                          <td colspan="7" class="table-empty-msg">Cargando registros descifrados desde base de datos segura...</td>
                         </tr>
                       </tbody>
                     </table>
@@ -454,14 +463,21 @@
           <a href="#gallery">Fotos de Operación</a>
           <a href="#quote-info">Canales de Venta</a>
           <a href="#contact">Formulario de Contacto</a>
+          <a href="#" id="footer-link-privacy">Política de Privacidad</a>
+          <a href="#" id="footer-link-terms">Términos y Condiciones</a>
         </div>
         <div class="footer-links-col">
           <h4>Contacto & Ubicación</h4>
-          <a href="#contact">📍 Av. Clotario Blest 2694, Pedro Aguirre Cerda</a>
-          <a href="tel:+56983274339">📞 Tel: +56 9 8327 4339</a>
-          <a href="https://wa.me/56983274339">💬 WhatsApp Directo</a>
-          <a href="#contact">✉️ contacto@escombrosrojas.cl</a>
+          <a href="#contact"><span class="emoji-large">📍</span> Av. Clotario Blest 2694, Pedro Aguirre Cerda</a>
+          <a href="tel:+56983274339"><span class="emoji-large">📞</span> Tel: +56 9 8327 4339</a>
+          <a href="https://wa.me/56983274339"><span class="emoji-large">💬</span> WhatsApp Directo</a>
+          <a href="#contact"><span class="emoji-large">✉️</span> contacto@escombrosamauryrojas.cl</a>
         </div>
+      </div>
+      <!-- Contador de Visitas (Footer) -->
+      <div class="visitor-counter-footer" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 12px; color: #64748b; font-family: 'Inter', sans-serif;">
+        <div>🟢 Clientes activos ahora: <span id="online-counter-footer" style="color: #25d366; font-weight: 700; font-family: monospace;">--</span></div>
+        <div>👥 Total de visitas registradas: <span id="total-counter-footer" style="color: #ffffff; font-weight: 700; font-family: monospace;">--</span> personas</div>
       </div>
     </footer>
 
@@ -486,7 +502,7 @@
         <p>La Empresa aplica controles técnicos avanzados: cifrado en reposo <strong>AES-256-CBC</strong> del teléfono y correo en el archivo local <code>database.json</code>, registro inalterable de operaciones en <code>security_audit.log</code>, y sanitización de entradas contra inyecciones XSS.</p>
         
         <h5>4. Derechos de los Usuarios (Derechos ARCO)</h5>
-        <p>El Usuario puede solicitar de manera gratuita el Acceso, Rectificación, Cancelación u Oposición de sus datos enviando una solicitud formal por escrito al correo electrónico <strong>contacto@escombrosrojas.cl</strong>.</p>
+        <p>El Usuario puede solicitar de manera gratuita el Acceso, Rectificación, Cancelación u Oposición de sus datos enviando una solicitud formal por escrito al correo electrónico <strong>contacto@escombrosamauryrojas.cl</strong>.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-red" id="btn-close-privacy-ok">Aceptar</button>

@@ -1,7 +1,7 @@
 /* Paleta de Colores y Variables de Diseño (Gris Claro / Blanco con Rojo) */
 :root {
-  --bg-primary: #f8f9fc;
-  --bg-secondary: #ffffff;
+  --bg-primary: #f1f5f9; /* Soft slate gray background */
+  --bg-secondary: #fafbfc; /* Soft off-white for cards, reducing harshness */
   --bg-dark: #1a1c23;
   --bg-light-red: rgba(217, 4, 41, 0.04);
   
@@ -17,7 +17,7 @@
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
-  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-smooth: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.3s ease;
   --radius-lg: 16px;
   --radius-md: 10px;
 }
@@ -95,6 +95,7 @@ h1, h2, h3, h4 {
   display: flex;
   gap: 28px;
   align-items: center;
+  position: relative;
 }
 
 .nav-link {
@@ -103,10 +104,24 @@ h1, h2, h3, h4 {
   font-size: 14px;
   font-weight: 600;
   transition: var(--transition-smooth);
+  position: relative;
+  padding: 6px 0;
 }
 
-.nav-link:hover {
+.nav-link:hover, .nav-link.active {
   color: #ffffff;
+}
+
+.nav-indicator {
+  position: absolute;
+  bottom: -4px;
+  height: 3px;
+  background-color: var(--accent-red);
+  border-radius: 2px;
+  transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  width: 0;
+  left: 0;
+  box-shadow: 0 0 8px var(--accent-red);
 }
 
 /* Botón WhatsApp Header */
@@ -284,7 +299,7 @@ h1, h2, h3, h4 {
 }
 
 .badge-icon {
-  font-size: 38px;
+  font-size: 44px;
   background-color: #fff;
   border: 1px solid var(--border-color);
   width: 60px;
@@ -346,9 +361,17 @@ h1, h2, h3, h4 {
 
 /* Sección Servicios */
 .services-section {
+  width: 100%;
+  background: linear-gradient(rgba(241, 245, 249, 0.5), rgba(241, 245, 249, 0.5)), url('/fotosmauri/WhatsApp Image 2026-08-24 at 11.23.00.webp') no-repeat center center;
+  background-size: cover;
+  background-position: center;
+  background-attachment: scroll;
+  padding: 100px 24px;
+}
+
+.services-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 100px 24px;
 }
 
 .services-grid {
@@ -592,7 +615,7 @@ h1, h2, h3, h4 {
 
 .btn-icon-inner {
   margin-right: 6px;
-  font-size: 22px;
+  font-size: 28px;
   vertical-align: middle;
 }
 
@@ -643,7 +666,7 @@ h1, h2, h3, h4 {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 32px;
   box-shadow: var(--shadow-sm);
 }
 
@@ -767,7 +790,14 @@ h1, h2, h3, h4 {
 
 .alert-icon {
   font-weight: bold;
-  font-size: 16px;
+  font-size: 22px;
+}
+
+.emoji-large {
+  font-size: 1.35em;
+  vertical-align: middle;
+  display: inline-block;
+  margin-right: 4px;
 }
 
 /* Letras Chicas y Pie de Página de Cumplimiento ISO 27001 */
@@ -1196,5 +1226,30 @@ h1, h2, h3, h4 {
   padding: 8px 20px;
   font-size: 13px;
   border-radius: 6px;
+}
+
+/* Efecto de pulso y realce para la selección de servicio rápido */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(217, 4, 41, 0.7);
+    border-color: var(--accent-red);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 15px 5px rgba(217, 4, 41, 0.4);
+    border-color: var(--accent-red-hover);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(217, 4, 41, 0);
+    border-color: var(--border-color);
+    transform: scale(1);
+  }
+}
+
+.pulse-highlight {
+  animation: pulseGlow 1.6s cubic-bezier(0.25, 0.8, 0.25, 1) 1;
+  outline: none;
+  border-width: 2px !important;
 }
 
