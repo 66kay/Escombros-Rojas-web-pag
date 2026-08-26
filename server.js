@@ -130,7 +130,13 @@ function authorizeAdmin(req, res, next) {
   // Generar hash SHA-256 de la clave recibida
   const incomingHash = crypto.createHash('sha256').update(adminKey).digest('hex');
 
-  if (incomingHash === ADMIN_PASSKEY_HASH) {
+  // Asegurar compatibilidad si se guardó en env la contraseña en texto plano en vez del hash SHA-256
+  let expectedHash = ADMIN_PASSKEY_HASH;
+  if (ADMIN_PASSKEY_HASH.length !== 64 || !/^[0-9a-fA-F]+$/.test(ADMIN_PASSKEY_HASH)) {
+    expectedHash = crypto.createHash('sha256').update(ADMIN_PASSKEY_HASH).digest('hex');
+  }
+
+  if (incomingHash === expectedHash) {
     next();
   } else {
     logSecurityEvent('WARN', `Intento de acceso fallido con clave incorrecta.`, ip);
