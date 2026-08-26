@@ -178,7 +178,7 @@ selectServiceBtns.forEach(btn => {
     }
     const contactSection = document.getElementById('contact');
     if (contactSection) {
-      const headerOffset = 115;
+      const headerOffset = 140;
       const elementPosition = contactSection.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -542,7 +542,7 @@ navLinks.forEach(link => {
       
       const targetEl = document.querySelector(targetId);
       if (targetEl) {
-        const headerOffset = 115;
+        const headerOffset = 140;
         const elementPosition = targetEl.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
