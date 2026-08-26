@@ -21,27 +21,50 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
-// Configuración de cifrado (ISO 27001 - AES-256)
+// Configuración de cifrado (Buenas Prácticas de Seguridad - AES-256)
 const rawKey = process.env.ENCRYPTION_KEY || 'mauri-secret-key-13579-default-fallback';
 const ENCRYPTION_KEY = crypto.createHash('sha256').update(rawKey).digest(); // Clave de 32 bytes de forma segura
 const IV_LENGTH = 16;
 
-// Hash SHA-256 de la contraseña del Administrador (ISO 27001 - Almacenamiento seguro de credenciales)
+// Hash SHA-256 de la contraseña del Administrador (Buenas Prácticas - Almacenamiento seguro de credenciales)
 const ADMIN_PASSKEY_HASH = process.env.ADMIN_PASSKEY_HASH || 'HASH_ROTADO_POR_SEGURIDAD';
 
-// Función para cifrar texto
+// Función para cifrar texto con AES-256-GCM (Buenas Prácticas - Autenticación e Integridad)
 function encrypt(text) {
   if (!text) return '';
-  const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
+  const iv = crypto.randomBytes(12); // IV de 12 bytes recomendado para GCM
+  const cipher = crypto.createCipheriv('aes-256-gcm', ENCRYPTION_KEY, iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  return iv.toString('hex') + ':' + encrypted;
+  const authTag = cipher.getAuthTag();
+  return iv.toString('hex') + ':' + authTag.toString('hex') + ':' + encrypted;
 }
 
 // Función para descifrar texto
 function decrypt(text) {
   if (!text) return '';
+  try {
+    const parts = text.split(':');
+    if (parts.length < 3) {
+      // Fallback para registros antiguos creados con aes-256-cbc
+      return decryptLegacyCBC(text);
+    }
+    const iv = Buffer.from(parts[0], 'hex');
+    const authTag = Buffer.from(parts[1], 'hex');
+    const encryptedText = Buffer.from(parts[2], 'hex');
+    
+    const decipher = crypto.createDecipheriv('aes-256-gcm', ENCRYPTION_KEY, iv);
+    decipher.setAuthTag(authTag);
+    let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  } catch (err) {
+    return '[ERROR DE DESCIFRADO]';
+  }
+}
+
+// Descifrado heredado para compatibilidad con registros creados con AES-256-CBC
+function decryptLegacyCBC(text) {
   try {
     const parts = text.split(':');
     const iv = Buffer.from(parts.shift(), 'hex');
@@ -51,7 +74,7 @@ function decrypt(text) {
     decrypted += decipher.final('utf8');
     return decrypted;
   } catch (err) {
-    return '[ERROR DE DESCIFRADO]';
+    return '[ERROR DE DESCIFRADO HEREDADO]';
   }
 }
 
@@ -94,7 +117,7 @@ function logSecurityEvent(level, message, ip) {
   fs.appendFileSync(LOG_FILE, logEntry);
 }
 
-// Middleware de autorización para administradores (ISO 27001 - Hashing de credenciales)
+// Middleware de autorización para administradores (Buenas Prácticas - Hashing de credenciales)
 function authorizeAdmin(req, res, next) {
   const ip = req.ip || req.connection.remoteAddress;
   const adminKey = req.headers['x-admin-key'];
@@ -126,7 +149,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "/fotosmauri/", "https://*"],
+      imgSrc: ["'self'", "data:", "/images/", "https://*"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       connectSrc: ["'self'", "http://localhost:3000", "ws://localhost:5173", "http://localhost:5173", "ws://127.0.0.1:5173", "http://127.0.0.1:5173", "http://127.0.0.1:3000"]
     }
@@ -140,7 +163,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-  'https://escombros-rojas-web-pag.onrender.com',
+  'https://escombros-amaury-rojas-web-pag.onrender.com',
   'https://escombrosamauryrojas.cl',
   'https://www.escombrosamauryrojas.cl'
 ];
@@ -213,14 +236,14 @@ app.post('/api/contact', contactLimiter, (e, r) => {
   try {
     let { nombre, telefono, email, servicio, mensaje, consentimientoIso } = e.body;
 
-    if (!nombre || !telefono || !servicio || !mensaje) {
-      logSecurityEvent('WARN', 'Fallo de validación: campos vacíos.', ip);
+    if (!nombre || !telefono || !servicio) {
+      logSecurityEvent('WARN', 'Fallo de validación: campos obligatorios vacíos.', ip);
       return r.status(400).json({ error: 'Todos los campos obligatorios deben ser completados.' });
     }
 
     nombre = sanitizeInput(nombre);
     servicio = sanitizeInput(servicio);
-    mensaje = sanitizeInput(mensaje);
+    mensaje = sanitizeInput(mensaje || '');
 
     const encryptedEmail = encrypt(sanitizeInput(email));
     const encryptedPhone = encrypt(sanitizeInput(telefono));
@@ -340,7 +363,7 @@ app.post('/api/visits', visitsLimiter, (req, res) => {
   const visitsData = loadVisits();
   visitsData.totalPageViews = (visitsData.totalPageViews || 0) + 1;
 
-  // Hashing de IP para cumplimiento de privacidad ISO 27001 (anonimización)
+  // Hashing de IP para resguardar la privacidad del usuario (anonimización)
   const ipHash = crypto.createHash('sha256').update(clientIp).digest('hex');
   if (!visitsData.uniqueIPs.includes(ipHash)) {
     visitsData.uniqueIPs.push(ipHash);
@@ -393,6 +416,6 @@ app.listen(PORT, () => {
   console.log(`[BACKEND] Servidor base de datos seguro en ejecución en http://localhost:${PORT}`);
   const initIp = '127.0.0.1';
   const timestamp = new Date().toISOString();
-  const initLog = `[${timestamp}] [INFO] [IP: ${initIp}] Servidor Express de Base de Datos inicializado de acuerdo a la norma ISO 27001.\n`;
+  const initLog = `[${timestamp}] [INFO] [IP: ${initIp}] Servidor Express de Base de Datos inicializado de acuerdo a buenas prácticas de seguridad.\n`;
   fs.appendFileSync(LOG_FILE, initLog);
 });

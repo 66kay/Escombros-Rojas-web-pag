@@ -1,0 +1,7 @@
+# robots.txt para Escombros Amaury Rojas
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin
+
+Sitemap: https://www.escombrosamauryrojas.cl/sitemap.xml

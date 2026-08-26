@@ -2,14 +2,14 @@
 ## PROYECTO: ESCOMBROS AMAURY ROJAS — RETIRO DE ESCOMBROS Y VENTA DE ÁRIDOS
 **Última actualización: Agosto 2026**
 
-La presente Política de Privacidad describe cómo **Escombros Amaury Rojas** (en adelante, la "Empresa"), recopila, utiliza, procesa y protege los datos personales de los usuarios (en adelante, el "Usuario") que contactan a la Empresa a través del formulario del sitio web o canales directos, de conformidad con la Ley N° 19.628 sobre Protección de la Vida Privada (Chile) y los lineamientos de la norma internacional **ISO/IEC 27001**.
+La presente Política de Privacidad describe cómo **Escombros Amaury Rojas** (en adelante, la "Empresa"), recopila, utiliza, procesa y protege los datos personales de los usuarios (en adelante, el "Usuario") que contactan a la Empresa a través del formulario del sitio web o canales directos, de conformidad con la Ley N° 19.628 sobre Protección de la Vida Privada (Chile) y aplicamos buenas prácticas de seguridad de la información alineadas con estándares internacionales.
 
 ---
 
 ### 1. Responsable del Tratamiento de Datos
 * **Nombre Comercial:** Escombros Amaury Rojas
 * **Dirección Física:** Av. Clotario Blest 2694, Pedro Aguirre Cerda, Santiago, Región Metropolitana
-* **Correo de Contacto:** contacto@escombrosrojas.cl
+* **Correo de Contacto:** contacto@escombrosamauryrojas.cl
 
 ---
 
@@ -31,9 +31,9 @@ Los datos personales proporcionados serán utilizados exclusivamente para los si
 
 ---
 
-### 4. Seguridad de la Información (ISO/IEC 27001)
+### 4. Seguridad de la Información y Buenas Prácticas
 La Empresa implementa controles técnicos y organizativos avanzados para salvaguardar la confidencialidad, integridad y disponibilidad de los datos:
-* **Cifrado en Reposo (AES-256-CBC):** Los datos personales sensibles (número de teléfono y correo electrónico) son convertidos inmediatamente a un bloque de cifrado simétrico irreversible mediante una clave criptográfica de 256 bits y un vector de inicialización (IV) único por cada registro.
+* **Cifrado en Reposo (AES-256-GCM):** Los datos personales sensibles (número de teléfono y correo electrónico) se cifran mediante algoritmos simétricos avanzados de autenticación integrada de 256 bits, garantizando la privacidad y la inalterabilidad de los datos frente a accesos no autorizados.
 * **Base de Datos Protegida:** La información se almacena físicamente en el archivo `database.json`, ubicado fuera de la carpeta pública del servidor web para evitar accesos o descargas no autorizadas.
 * **Logs de Auditoría:** Toda operación de acceso, envío o descifrado se registra de forma acumulativa e inalterable en `security_audit.log`, identificando marcas de tiempo e IPs de origen.
 * **Sanitización de Entradas (XSS):** El sistema filtra e inactiva caracteres especiales de scripting para evitar la inyección de código malicioso en el navegador o en la base de datos.
@@ -47,7 +47,7 @@ El Usuario es propietario de sus datos personales y tiene derecho a ejercer el c
 * **Cancelación (Eliminación):** Solicitar la eliminación total de sus datos cuando ya no sean necesarios para la cotización o el servicio acordado.
 * **Oposición:** Oponerse al uso de sus datos para fines específicos.
 
-Para ejercer cualquiera de estos derechos, el Usuario debe enviar una solicitud formal por escrito al correo electrónico **contacto@escombrosrojas.cl**, detallando su nombre y el número telefónico que desea eliminar o corregir. La Empresa responderá a la solicitud en un plazo máximo de 10 días hábiles.
+Para ejercer cualquiera de estos derechos, el Usuario debe enviar una solicitud formal por escrito al correo electrónico **contacto@escombrosamauryrojas.cl**, detallando su nombre y el número telefónico que desea eliminar o corregir. La Empresa responderá a la solicitud en un plazo máximo de 10 días hábiles.
 
 ---
 
