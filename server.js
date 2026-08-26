@@ -139,16 +139,22 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:3000',
-  'http://127.0.0.1:3000'
+  'http://127.0.0.1:3000',
+  'https://escombros-rojas-web-pag.onrender.com',
+  'https://escombrosamauryrojas.cl',
+  'https://www.escombrosamauryrojas.cl'
 ];
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'El control CORS bloquea el acceso desde el origen especificado.';
-      return callback(new Error(msg), false);
+    
+    // Permitir si está en la lista blanca o si termina en onrender.com (subdominios de Render)
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.onrender.com')) {
+      return callback(null, true);
     }
-    return callback(null, true);
+    
+    const msg = 'El control CORS bloquea el acceso desde el origen especificado.';
+    return callback(new Error(msg), false);
   }
 }));
 
