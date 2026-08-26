@@ -50,9 +50,7 @@ h1, h2, h3, h4 {
   left: 0;
   width: 100%;
   z-index: 999;
-  background: rgba(26, 28, 35, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #1a1c23;
   border-bottom: 1px solid #2d313f;
   box-shadow: var(--shadow-sm);
 }
@@ -390,6 +388,7 @@ h1, h2, h3, h4 {
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
+  will-change: transform, box-shadow;
 }
 
 .service-card:hover {
