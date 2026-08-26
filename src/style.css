@@ -58,7 +58,7 @@ h1, h2, h3, h4 {
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid #2d313f;
   box-shadow: var(--shadow-sm);
-  will-change: backdrop-filter, transform;
+  will-change: transform;
 }
 
 .nav-container {
@@ -466,6 +466,8 @@ h1, h2, h3, h4 {
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
   padding: 100px 24px;
+  content-visibility: auto;
+  contain-intrinsic-size: 800px;
 }
 
 .gallery-grid {
@@ -639,6 +641,8 @@ h1, h2, h3, h4 {
   background-position: center;
   background-attachment: scroll;
   padding: 100px 24px;
+  content-visibility: auto;
+  contain-intrinsic-size: 600px;
 }
 
 .contact-container {
