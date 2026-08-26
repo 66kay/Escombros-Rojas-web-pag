@@ -4,34 +4,7 @@ const API_BASE_URL = window.location.hostname === 'localhost' || window.location
   ? 'http://localhost:3000'
   : '';
 
-// Función para realizar un desplazamiento suave (smooth scroll) manual por software con curva de aceleración
-// Ahora corre a 144 FPS estables gracias a la optimización previa de peso y carga de imágenes
-function customSmoothScrollTo(targetPosition, duration = 600) {
-  const startPosition = window.pageYOffset || document.documentElement.scrollTop;
-  const distance = targetPosition - startPosition;
-  let startTime = null;
-
-  function animation(currentTime) {
-    if (startTime === null) startTime = currentTime;
-    const timeElapsed = currentTime - startTime;
-    const run = easeInOutQuad(timeElapsed, startPosition, distance, duration);
-    window.scrollTo(0, run);
-    if (timeElapsed < duration) {
-      requestAnimationFrame(animation);
-    } else {
-      window.scrollTo(0, targetPosition); // Asegurar posición exacta final
-    }
-  }
-
-  function easeInOutQuad(t, b, c, d) {
-    t /= d / 2;
-    if (t < 1) return c / 2 * t * t + b;
-    t--;
-    return -c / 2 * (t * (t - 2) - 1) + b;
-  }
-
-  requestAnimationFrame(animation);
-}
+// Eliminado scroll manual por software para usar la aceleración nativa por hardware del compositor thread (144 FPS estables)
 
 // Función para sanitizar HTML en el cliente (prevención de XSS - Defensa en Profundidad)
 function escapeHTML(str) {
@@ -178,11 +151,7 @@ selectServiceBtns.forEach(btn => {
     }
     const contactSection = document.getElementById('contact');
     if (contactSection) {
-      const headerOffset = 80;
-      const elementPosition = contactSection.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-      customSmoothScrollTo(offsetPosition, 450);
+      contactSection.scrollIntoView({ behavior: 'smooth' });
     }
   });
 });
@@ -470,14 +439,11 @@ const navIndicator = document.querySelector('.nav-indicator');
 const sections = document.querySelectorAll('section[id]');
 let isScrollingFromClick = false;
 
-// Función para mover el subrayado deslizante
+// Función para mover el subrayado deslizante (optimizado sin getBoundingClientRect para evitar Layout Thrashing)
 function moveIndicator(activeLink) {
-  if (!navIndicator || !activeLink || !navMenu) return;
-  const menuRect = navMenu.getBoundingClientRect();
-  const linkRect = activeLink.getBoundingClientRect();
-  
-  navIndicator.style.width = `${linkRect.width}px`;
-  navIndicator.style.left = `${linkRect.left - menuRect.left}px`;
+  if (!navIndicator || !activeLink) return;
+  navIndicator.style.width = `${activeLink.offsetWidth}px`;
+  navIndicator.style.left = `${activeLink.offsetLeft}px`;
 }
 
 // Inicializar posición al cargar y al redimensionar la ventana
@@ -525,10 +491,6 @@ navLinks.forEach(link => {
       
       const targetEl = document.querySelector(targetId);
       if (targetEl) {
-        const headerOffset = 80;
-        const elementPosition = targetEl.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
         // Desactivar temporalmente la actualización automática del scrollspy
         isScrollingFromClick = true;
         
@@ -537,12 +499,13 @@ navLinks.forEach(link => {
         link.classList.add('active');
         moveIndicator(link);
         
-        customSmoothScrollTo(offsetPosition, 500);
+        // Desplazamiento nativo del navegador (144 FPS en compositor thread)
+        targetEl.scrollIntoView({ behavior: 'smooth' });
         
         // Reactivar scrollspy después de que termine la animación
         setTimeout(() => {
           isScrollingFromClick = false;
-        }, 550);
+        }, 800);
       }
     }
   });
