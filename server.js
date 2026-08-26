@@ -153,7 +153,8 @@ app.use(cors({
       return callback(null, true);
     }
     
-    const msg = 'El control CORS bloquea el acceso desde el origen especificado.';
+    const msg = `El control CORS bloquea el acceso desde el origen especificado: ${origin}`;
+    console.warn(`[CORS REJECTED] Origin: ${origin}`);
     return callback(new Error(msg), false);
   }
 }));
