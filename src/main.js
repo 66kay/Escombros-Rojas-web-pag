@@ -467,6 +467,8 @@ if (btnCloseTermsOk) btnCloseTermsOk.addEventListener('click', closeTerms);
 const navMenu = document.querySelector('.nav-menu');
 const navLinks = document.querySelectorAll('.nav-link');
 const navIndicator = document.querySelector('.nav-indicator');
+const sections = document.querySelectorAll('section[id]');
+let isScrollingFromClick = false;
 
 // Función para mover el subrayado deslizante
 function moveIndicator(activeLink) {
@@ -486,33 +488,33 @@ function initIndicator() {
   }
 }
 
-// Escuchar cambios de tamaño de ventana para ajustar el indicador
 window.addEventListener('resize', initIndicator);
-// Retrasar inicialización para asegurar la carga completa de fuentes y estilos
 setTimeout(initIndicator, 150);
 
-// Scroll Spy: Detectar qué sección está activa según la posición de la pantalla
-const sections = document.querySelectorAll('section[id]');
-function scrollSpy() {
-  const scrollY = window.pageYOffset;
-  const headerOffset = 90; // Umbral de la cabecera
+// Configuración de IntersectionObserver para un Scroll Spy ultra-fluido (0 lag)
+const observerOptions = {
+  root: null,
+  rootMargin: '-80px 0px -60% 0px', // Ajuste para navbar fijo y zona de interés del viewport
+  threshold: 0
+};
 
-  sections.forEach(current => {
-    const sectionHeight = current.offsetHeight;
-    const sectionTop = current.offsetTop - headerOffset;
-    const sectionId = current.getAttribute('id');
-    
-    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-      const activeLink = document.querySelector(`.nav-menu a[href*=${sectionId}]`);
-      if (activeLink && !activeLink.classList.contains('active')) {
+const observer = new IntersectionObserver((entries) => {
+  if (isScrollingFromClick) return; // Evitar interferencias durante scroll por clic
+  
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const sectionId = entry.target.getAttribute('id');
+      const activeLink = document.querySelector(`.nav-menu a[href*="${sectionId}"]`);
+      if (activeLink) {
         navLinks.forEach(link => link.classList.remove('active'));
         activeLink.classList.add('active');
         moveIndicator(activeLink);
       }
     }
   });
-}
-window.addEventListener('scroll', scrollSpy);
+}, observerOptions);
+
+sections.forEach(section => observer.observe(section));
 
 // Clic en los enlaces de navegación
 navLinks.forEach(link => {
@@ -521,28 +523,27 @@ navLinks.forEach(link => {
     if (targetId.startsWith('#')) {
       e.preventDefault();
       
-      // Quitar scroll temporal para evitar conflicto visual de la transición
-      window.removeEventListener('scroll', scrollSpy);
-      
-      // Actualizar estado activo e indicador deslizante inmediatamente
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      moveIndicator(link);
-      
       const targetEl = document.querySelector(targetId);
       if (targetEl) {
         const headerOffset = 80;
         const elementPosition = targetEl.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
+        // Desactivar temporalmente la actualización automática del scrollspy
+        isScrollingFromClick = true;
+        
+        // Mover indicador inmediatamente para mayor sensación de respuesta
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        moveIndicator(link);
+        
         customSmoothScrollTo(offsetPosition, 500);
+        
+        // Reactivar scrollspy después de que termine la animación
+        setTimeout(() => {
+          isScrollingFromClick = false;
+        }, 550);
       }
-      
-      // Volver a activar scrollSpy después de que termine el scroll (500ms)
-      setTimeout(() => {
-        window.addEventListener('scroll', scrollSpy);
-        scrollSpy();
-      }, 500);
     }
   });
 });

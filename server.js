@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Confianza en el Proxy Inverso (necesario para obtener la IP real del cliente detrás de Cloudflare, Heroku, Render, etc.)
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 // Configuración de cifrado (ISO 27001 - AES-256)
