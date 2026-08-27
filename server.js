@@ -208,7 +208,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "/images/", "https://*"],
+      imgSrc: ["'self'", "data:", "https://*"],
       scriptSrc: ["'self'"],
       connectSrc: ["'self'", "http://localhost:3000", "ws://localhost:5173", "http://localhost:5173", "ws://127.0.0.1:5173", "http://127.0.0.1:5173", "http://127.0.0.1:3000"]
     }
