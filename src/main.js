@@ -417,5 +417,32 @@ function updateVisitorUI(active, total) {
 // Registrar visita (POST) al cargar la página por primera vez
 trackVisit(true);
 
-// Actualizar cantidad de usuarios activos en tiempo real cada 30 segundos usando GET (sin subir contador de visitas)
-setInterval(() => trackVisit(false), 30000);
+// Variable para almacenar el ID del intervalo de tracking de visitas
+let trackingIntervalId = null;
+
+function startTrackingInterval() {
+  if (!trackingIntervalId) {
+    trackingIntervalId = setInterval(() => trackVisit(false), 30000);
+  }
+}
+
+function stopTrackingInterval() {
+  if (trackingIntervalId) {
+    clearInterval(trackingIntervalId);
+    trackingIntervalId = null;
+  }
+}
+
+// Iniciar el intervalo de actualización de visitas recurrentes
+startTrackingInterval();
+
+// Pausar el intervalo cuando la pestaña se minimiza/oculta y reanudarlo cuando vuelve a ser activa
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    stopTrackingInterval();
+  } else {
+    // Actualizar datos de inmediato tras regresar a la pestaña
+    trackVisit(false);
+    startTrackingInterval();
+  }
+});

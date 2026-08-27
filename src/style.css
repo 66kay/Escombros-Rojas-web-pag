@@ -59,6 +59,7 @@ h1, h2, h3, h4 {
   border-bottom: 1px solid #2d313f;
   box-shadow: var(--shadow-sm);
   will-change: transform;
+  transform: translateZ(0);
 }
 
 .nav-container {
@@ -394,10 +395,10 @@ h1, h2, h3, h4 {
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  will-change: transform, box-shadow;
 }
 
 .service-card:hover {
+  will-change: transform, box-shadow;
   transform: translateY(-6px);
   border-color: rgba(217, 4, 41, 0.25);
   box-shadow: var(--shadow-md);
