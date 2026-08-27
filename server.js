@@ -193,7 +193,15 @@ function authorizeAdmin(req, res, next) {
 // CONFIGURACIÓN DE SEGURIDAD (HELMET, CORS, RATE LIMITS)
 // ==========================================
 
-// 1. Cabeceras de seguridad HTTP con Helmet (Configuración personalizada compatible con Google Fonts y Vite Dev)
+// Middleware para forzar HTTPS en producción (Detrás del proxy inverso de Render)
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
+    return res.redirect(301, `https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
+
+// 1. Cabeceras de seguridad HTTP con Helmet (Configuración personalizada compatible con Google Fonts y HSTS)
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -204,6 +212,11 @@ app.use(helmet({
       scriptSrc: ["'self'"],
       connectSrc: ["'self'", "http://localhost:3000", "ws://localhost:5173", "http://localhost:5173", "ws://127.0.0.1:5173", "http://127.0.0.1:5173", "http://127.0.0.1:3000"]
     }
+  },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
   },
   crossOriginEmbedderPolicy: false
 }));
