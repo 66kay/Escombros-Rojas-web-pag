@@ -144,12 +144,6 @@ form.addEventListener('submit', async (e) => {
       successBanner.classList.remove('hidden');
       successBannerText.textContent = '¡Tu solicitud ha sido enviada con éxito! Nos contactaremos a la brevedad.';
       form.reset();
-      
-      // Actualizar el panel administrativo si la sesión está abierta
-      if (getStoredKey()) {
-        fetchDatabaseRecords();
-        fetchAuditLogs();
-      }
     } else {
       errorBanner.classList.remove('hidden');
       errorBannerText.textContent = data.error || 'Error de procesamiento en el servidor.';

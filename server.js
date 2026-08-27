@@ -94,10 +94,17 @@ function decryptLegacyCBC(text) {
   }
 }
 
-// Archivos de almacenamiento
-const DB_FILE = path.join(__dirname, 'database.json');
-const LOG_FILE = path.join(__dirname, 'security_audit.log');
-const VISITS_FILE = path.join(__dirname, 'visits.json');
+// Archivos de almacenamiento y directorio de persistencia
+const DATA_DIR = process.env.DATA_DIR || __dirname;
+
+// Asegurar existencia del directorio de datos de forma recursiva
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+const DB_FILE = path.join(DATA_DIR, 'database.json');
+const LOG_FILE = path.join(DATA_DIR, 'security_audit.log');
+const VISITS_FILE = path.join(DATA_DIR, 'visits.json');
 
 // Inicializar archivos
 if (!fs.existsSync(DB_FILE)) {
@@ -138,17 +145,29 @@ setInterval(() => {
 
 // Control de visitas en memoria y persistente
 const activeUsers = new Map();
+let lastKnownTotalPageViews = 0;
 
 function loadVisits() {
   try {
-    return JSON.parse(fs.readFileSync(VISITS_FILE, 'utf8'));
+    const data = JSON.parse(fs.readFileSync(VISITS_FILE, 'utf8'));
+    if (data && typeof data.totalPageViews === 'number') {
+      if (data.totalPageViews < lastKnownTotalPageViews) {
+        data.totalPageViews = lastKnownTotalPageViews;
+      } else {
+        lastKnownTotalPageViews = data.totalPageViews;
+      }
+    }
+    return data;
   } catch (e) {
-    return { totalPageViews: 0, uniqueIPs: [] };
+    return { totalPageViews: lastKnownTotalPageViews, uniqueIPs: [] };
   }
 }
 
 function saveVisits(data) {
   try {
+    if (data && typeof data.totalPageViews === 'number') {
+      lastKnownTotalPageViews = Math.max(lastKnownTotalPageViews, data.totalPageViews);
+    }
     fs.writeFileSync(VISITS_FILE, JSON.stringify(data, null, 2), 'utf8');
   } catch (e) {
     console.error('Error saving visits:', e);
