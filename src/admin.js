@@ -29,15 +29,15 @@ const dbEntriesBody = document.getElementById('db-entries-body');
 const auditLogsOutput = document.getElementById('audit-logs-output');
 const refreshAuditBtn = document.getElementById('refresh-audit-btn');
 
-// Obtener clave almacenada temporalmente
-function getStoredKey() {
-  return sessionStorage.getItem('adminKey');
+// Obtener token almacenado temporalmente
+function getStoredToken() {
+  return sessionStorage.getItem('adminToken');
 }
 
-// Inicializar sesión si ya existe clave
+// Inicializar sesión si ya existe token
 function initAdminSession() {
-  const key = getStoredKey();
-  if (key) {
+  const token = getStoredToken();
+  if (token) {
     adminAuthBox.classList.add('hidden');
     adminProtectedContent.classList.remove('hidden');
     fetchDatabaseRecords();
@@ -59,18 +59,21 @@ adminLoginBtn.addEventListener('click', async () => {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/audit`, {
+    const response = await fetch(`${API_BASE_URL}/api/login`, {
+      method: 'POST',
       headers: {
-        'x-admin-key': enteredKey
-      }
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ password: enteredKey })
     });
 
-    if (response.ok) {
-      sessionStorage.setItem('adminKey', enteredKey);
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      sessionStorage.setItem('adminToken', data.token);
       adminPasskeyInput.value = '';
       initAdminSession();
     } else {
-      const data = await response.json();
       adminAuthError.textContent = data.error || 'Clave de administración incorrecta.';
     }
   } catch (error) {
@@ -80,7 +83,7 @@ adminLoginBtn.addEventListener('click', async () => {
 
 // Cerrar sesión
 adminLogoutBtn.addEventListener('click', () => {
-  sessionStorage.removeItem('adminKey');
+  sessionStorage.removeItem('adminToken');
   initAdminSession();
 });
 
@@ -106,13 +109,13 @@ tabButtons.forEach(btn => {
 
 // Cargar registros de la base de datos real (Requiere autorización)
 async function fetchDatabaseRecords() {
-  const key = getStoredKey();
-  if (!key) return;
+  const token = getStoredToken();
+  if (!token) return;
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/contact`, {
       headers: {
-        'x-admin-key': key
+        'Authorization': `Bearer ${token}`
       }
     });
     
@@ -162,7 +165,7 @@ async function fetchDatabaseRecords() {
             const deleteRes = await fetch(`${API_BASE_URL}/api/contact/${item.id}`, {
               method: 'DELETE',
               headers: {
-                'x-admin-key': key
+                'Authorization': `Bearer ${token}`
               }
             });
             if (deleteRes.ok) {
@@ -194,13 +197,13 @@ async function fetchDatabaseRecords() {
 
 // Cargar consola de logs de auditoría (Requiere autorización)
 async function fetchAuditLogs() {
-  const key = getStoredKey();
-  if (!key) return;
+  const token = getStoredToken();
+  if (!token) return;
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/audit`, {
       headers: {
-        'x-admin-key': key
+        'Authorization': `Bearer ${token}`
       }
     });
     

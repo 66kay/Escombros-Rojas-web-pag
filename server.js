@@ -21,13 +21,29 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
+// Validar que las variables de entorno críticas existan (Evitar fallbacks hardcodeados en producción)
+if (!process.env.ENCRYPTION_KEY || process.env.ENCRYPTION_KEY === 'mauri-secret-key-13579-default-fallback') {
+  console.error('[FATAL] ENCRYPTION_KEY no está definida en las variables de entorno (.env o Render). Por seguridad, el servidor se detendrá.');
+  process.exit(1);
+}
+if (!process.env.ADMIN_PASSKEY_HASH) {
+  console.error('[FATAL] ADMIN_PASSKEY_HASH no está definida en las variables de entorno (.env o Render). Por seguridad, el servidor se detendrá.');
+  process.exit(1);
+}
+
 // Configuración de cifrado (Buenas Prácticas de Seguridad - AES-256)
-const rawKey = process.env.ENCRYPTION_KEY || 'mauri-secret-key-13579-default-fallback';
-const ENCRYPTION_KEY = crypto.createHash('sha256').update(rawKey).digest(); // Clave de 32 bytes de forma segura
+const rawKey = process.env.ENCRYPTION_KEY;
+// Si la clave provista es de 64 caracteres hex (32 bytes), la leemos como buffer hex.
+// De lo contrario, le aplicamos hash SHA-256 para garantizar 32 bytes de entropía segura.
+let ENCRYPTION_KEY;
+if (/^[0-9a-fA-F]{64}$/.test(rawKey)) {
+  ENCRYPTION_KEY = Buffer.from(rawKey, 'hex');
+} else {
+  ENCRYPTION_KEY = crypto.createHash('sha256').update(rawKey).digest();
+}
 const IV_LENGTH = 16;
 
-// Hash SHA-256 de la contraseña del Administrador (Buenas Prácticas - Almacenamiento seguro de credenciales)
-const ADMIN_PASSKEY_HASH = process.env.ADMIN_PASSKEY_HASH || 'HASH_ROTADO_POR_SEGURIDAD';
+const ADMIN_PASSKEY_HASH = process.env.ADMIN_PASSKEY_HASH;
 
 // Función para cifrar texto con AES-256-GCM (Buenas Prácticas - Autenticación e Integridad)
 function encrypt(text) {
@@ -91,6 +107,35 @@ if (!fs.existsSync(VISITS_FILE)) {
   fs.writeFileSync(VISITS_FILE, JSON.stringify({ totalPageViews: 0, uniqueIPs: [] }, null, 2));
 }
 
+// Cola de escritura serializada para evitar condiciones de carrera (bloqueo virtual de BD)
+let writeQueue = Promise.resolve();
+
+async function saveDatabase(data) {
+  return new Promise((resolve, reject) => {
+    writeQueue = writeQueue.then(async () => {
+      try {
+        await fs.promises.writeFile(DB_FILE, JSON.stringify(data, null, 2));
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
+}
+
+// Almacén de sesiones activas del administrador en memoria (token => tiempo de expiración)
+const activeSessions = new Map();
+
+// Limpiar sesiones expiradas periódicamente cada 15 minutos
+setInterval(() => {
+  const now = Date.now();
+  for (const [token, expiresAt] of activeSessions.entries()) {
+    if (now > expiresAt) {
+      activeSessions.delete(token);
+    }
+  }
+}, 15 * 60 * 1000);
+
 // Control de visitas en memoria y persistente
 const activeUsers = new Map();
 
@@ -117,31 +162,31 @@ function logSecurityEvent(level, message, ip) {
   fs.appendFileSync(LOG_FILE, logEntry);
 }
 
-// Middleware de autorización para administradores (Buenas Prácticas - Hashing de credenciales)
+// Middleware de autorización para administradores (Validación de tokens de sesión temporales)
 function authorizeAdmin(req, res, next) {
   const ip = req.ip || req.connection.remoteAddress;
-  const adminKey = req.headers['x-admin-key'];
-  
-  if (!adminKey) {
-    logSecurityEvent('WARN', 'Intento de acceso denegado: Cabecera x-admin-key ausente.', ip);
-    return res.status(401).json({ error: 'Acceso no autorizado. Se requiere contraseña.' });
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
+
+  if (!token) {
+    logSecurityEvent('WARN', 'Intento de acceso denegado: Token de autorización ausente o inválido.', ip);
+    return res.status(401).json({ error: 'Acceso no autorizado. Sesión inválida o expirada.' });
   }
 
-  // Generar hash SHA-256 de la clave recibida
-  const incomingHash = crypto.createHash('sha256').update(adminKey).digest('hex');
-
-  // Asegurar compatibilidad si se guardó en env la contraseña en texto plano en vez del hash SHA-256
-  let expectedHash = ADMIN_PASSKEY_HASH;
-  if (ADMIN_PASSKEY_HASH.length !== 64 || !/^[0-9a-fA-F]+$/.test(ADMIN_PASSKEY_HASH)) {
-    expectedHash = crypto.createHash('sha256').update(ADMIN_PASSKEY_HASH).digest('hex');
+  const now = Date.now();
+  if (activeSessions.has(token)) {
+    const expiresAt = activeSessions.get(token);
+    if (now <= expiresAt) {
+      // Renovar sesión: extender por 2 horas desde el último acceso
+      activeSessions.set(token, now + 2 * 60 * 60 * 1000);
+      return next();
+    } else {
+      activeSessions.delete(token); // Limpiar expirada
+    }
   }
 
-  if (incomingHash === expectedHash) {
-    next();
-  } else {
-    logSecurityEvent('WARN', `Intento de acceso fallido con clave incorrecta.`, ip);
-    res.status(401).json({ error: 'Contraseña de administrador incorrecta.' });
-  }
+  logSecurityEvent('WARN', 'Intento de acceso denegado: Token de sesión expirado o inexistente.', ip);
+  return res.status(401).json({ error: 'Acceso no autorizado. Sesión inválida o expirada.' });
 }
 
 // ==========================================
@@ -156,7 +201,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "/images/", "https://*"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      scriptSrc: ["'self'"],
       connectSrc: ["'self'", "http://localhost:3000", "ws://localhost:5173", "http://localhost:5173", "ws://127.0.0.1:5173", "http://127.0.0.1:5173", "http://127.0.0.1:3000"]
     }
   },
@@ -178,8 +223,8 @@ app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
     
-    // Permitir si está en la lista blanca o si termina en onrender.com (subdominios de Render)
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.onrender.com')) {
+    // Permitir solo si el origen está explícitamente en la lista blanca de producción/desarrollo
+    if (allowedOrigins.indexOf(origin) !== -1) {
       return callback(null, true);
     }
     
@@ -214,6 +259,14 @@ const visitsLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 5, // Máximo 5 intentos por IP cada 15 minutos
+  message: { error: 'Demasiados intentos de inicio de sesión fallidos. Por favor, espera 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Aplicar limitador global
 app.use(globalLimiter);
 
@@ -237,11 +290,20 @@ function sanitizeInput(text) {
 // ==========================================
 
 // Registrar una nueva solicitud
-app.post('/api/contact', contactLimiter, (e, r) => {
+app.post('/api/contact', contactLimiter, async (e, r) => {
   const ip = e.ip || e.connection.remoteAddress;
   
   try {
-    let { nombre, telefono, email, servicio, mensaje, consentimientoIso } = e.body;
+    let { nombre, telefono, email, servicio, mensaje, consentimientoIso, website } = e.body;
+
+    // Control Honeypot: si el bot llenó el campo oculto, simulamos éxito sin guardar
+    if (website) {
+      logSecurityEvent('INFO', 'Intento de spam bloqueado por honeypot.', ip);
+      return r.status(201).json({
+        success: true,
+        message: 'Mensaje de contacto recibido correctamente.'
+      });
+    }
 
     if (!nombre || !telefono || !servicio) {
       logSecurityEvent('WARN', 'Fallo de validación: campos obligatorios vacíos.', ip);
@@ -269,7 +331,7 @@ app.post('/api/contact', contactLimiter, (e, r) => {
     };
 
     dbData.push(newRequest);
-    fs.writeFileSync(DB_FILE, JSON.stringify(dbData, null, 2));
+    await saveDatabase(dbData);
 
     logSecurityEvent('INFO', `Nueva solicitud recibida. ID: ${newRequest.id}`, ip);
 
@@ -281,6 +343,39 @@ app.post('/api/contact', contactLimiter, (e, r) => {
   } catch (error) {
     logSecurityEvent('ERROR', `Error interno de procesamiento: ${error.message}`, ip);
     r.status(500).json({ error: 'Error del servidor al procesar el mensaje.' });
+  }
+});
+
+// Endpoint de Login de Administración (Generación de Tokens de sesión temporales)
+app.post('/api/login', loginLimiter, (req, res) => {
+  const ip = req.ip || req.connection.remoteAddress;
+  const { password } = req.body;
+
+  if (!password) {
+    logSecurityEvent('WARN', 'Intento de login fallido: Contraseña ausente.', ip);
+    return res.status(400).json({ error: 'Contraseña requerida.' });
+  }
+
+  // Generar hash SHA-256 de la clave recibida
+  const incomingHash = crypto.createHash('sha256').update(password).digest('hex');
+
+  // Asegurar compatibilidad si se guardó en env la contraseña en texto plano en vez del hash SHA-256
+  let expectedHash = ADMIN_PASSKEY_HASH;
+  if (ADMIN_PASSKEY_HASH.length !== 64 || !/^[0-9a-fA-F]+$/.test(ADMIN_PASSKEY_HASH)) {
+    expectedHash = crypto.createHash('sha256').update(ADMIN_PASSKEY_HASH).digest('hex');
+  }
+
+  if (incomingHash === expectedHash) {
+    // Generar token criptográfico aleatorio de sesión
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = Date.now() + 2 * 60 * 60 * 1000; // 2 horas de duración
+    activeSessions.set(token, expiresAt);
+
+    logSecurityEvent('INFO', 'Sesión de administración iniciada con éxito.', ip);
+    res.json({ success: true, token });
+  } else {
+    logSecurityEvent('WARN', 'Intento de login fallido: Contraseña incorrecta.', ip);
+    res.status(401).json({ error: 'Contraseña de administrador incorrecta.' });
   }
 });
 
@@ -310,7 +405,7 @@ app.get('/api/contact', authorizeAdmin, (e, r) => {
 });
 
 // Eliminar una solicitud por ID (Requiere autorización)
-app.delete('/api/contact/:id', authorizeAdmin, (req, res) => {
+app.delete('/api/contact/:id', authorizeAdmin, async (req, res) => {
   const ip = req.ip || req.connection.remoteAddress;
   const requestId = req.params.id;
 
@@ -324,7 +419,7 @@ app.delete('/api/contact/:id', authorizeAdmin, (req, res) => {
       return res.status(404).json({ error: 'La solicitud no existe.' });
     }
 
-    fs.writeFileSync(DB_FILE, JSON.stringify(filteredData, null, 2));
+    await saveDatabase(filteredData);
     logSecurityEvent('INFO', `Solicitud eliminada correctamente. ID: ${requestId}`, ip);
 
     res.json({ success: true, message: 'Solicitud eliminada correctamente.' });

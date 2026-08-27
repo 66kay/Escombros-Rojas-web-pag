@@ -335,6 +335,12 @@
                 <span class="error-msg" id="error-consent"></span>
               </div>
 
+              <!-- Campo Honeypot para evitar spam de bots (Oculto para humanos) -->
+              <div style="display: none;" aria-hidden="true">
+                <label for="form-website">Dejar vacío (Honeypot):</label>
+                <input type="text" id="form-website" tabindex="-1" autocomplete="off" />
+              </div>
+
               <button type="submit" id="form-submit-btn" class="btn-red btn-full-width">Enviar Mensaje de Contacto</button>
             </form>
 

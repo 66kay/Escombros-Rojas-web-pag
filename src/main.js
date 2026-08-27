@@ -76,6 +76,7 @@ form.addEventListener('submit', async (e) => {
   const service = document.getElementById('form-service').value;
   const message = document.getElementById('form-message').value.trim();
   const consent = document.getElementById('form-iso-consent').checked;
+  const website = document.getElementById('form-website') ? document.getElementById('form-website').value : '';
 
   let hasErrors = false;
 
@@ -132,7 +133,8 @@ form.addEventListener('submit', async (e) => {
         email: email || null,
         servicio: service,
         mensaje: message,
-        consentimientoIso: consent
+        consentimientoIso: consent,
+        website: website
       })
     });
 
