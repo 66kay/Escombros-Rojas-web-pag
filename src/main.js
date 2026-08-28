@@ -87,7 +87,7 @@ form.addEventListener('submit', async (e) => {
   }
   
   if (!PHONE_REGEX.test(phone)) {
-    document.getElementById('error-phone').textContent = 'Ingresa un número móvil válido (Ej: +56983274339 o 983274339).';
+    document.getElementById('error-phone').textContent = 'Ingresa un número móvil válido (Ej: +56967338745 o 967338745).';
     hasErrors = true;
   }
 
