@@ -247,7 +247,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
   'https://escombros-rojas-web-pag.onrender.com',
-  'https://escombros-amaury-rojas.onrender.com',
+  'https://escombrosamauryrojas.onrender.com',
   'https://escombrosamauryrojas.cl',
   'https://www.escombrosamauryrojas.cl'
 ];
