@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Administración — Escombros Amaury Rojas</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/favicon.png" />
+  </head>
+  <body class="admin-page-body" style="background-color: var(--bg-primary); padding-top: 100px;">
+    <!-- Navbar Header Simplificado -->
+    <header class="main-header">
+      <div class="nav-container">
+        <a href="/" class="logo-brand">
+          <img src="/images/logo_transparent.png" alt="Logo Escombros Amaury Rojas" class="logo-image-file" style="width: 44px; height: auto; margin-right: 12px; flex-shrink: 0;" />
+          <div style="display: flex; flex-direction: column;">
+            <span class="logo-text">Escombros Amaury Rojas</span>
+            <span class="logo-subtext">Panel Administrativo Privado</span>
+          </div>
+        </a>
+        <div class="nav-actions">
+          <a href="/" class="btn-outline-dark" style="text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">Volver a la Web</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main style="max-width: 1200px; margin: 40px auto; padding: 0 24px;">
+      <div class="compliance-footer-box" style="margin-top: 0; box-shadow: var(--shadow-md); border-radius: var(--radius-lg); overflow: hidden; background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
+        <div class="compliance-body-content" style="padding: 40px;">
+          
+          <!-- Caja de Inicio de Sesión de Administración -->
+          <div id="admin-auth-box" class="admin-login-box">
+            <h3 style="font-size: 22px; margin-bottom: 8px; color: var(--text-dark);">Acceso de Administración</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; max-width: 600px;">
+              Ingresa la clave de administración privada para visualizar el panel de solicitudes descifradas en tiempo real, gestionar registros y acceder a la consola de auditoría técnica.
+            </p>
+            <div class="admin-login-form-flex" style="display: flex; gap: 12px; max-width: 450px; margin-bottom: 12px;">
+              <input type="password" id="admin-passkey-input" placeholder="Clave de administración" style="padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; flex-grow: 1; background-color: var(--bg-primary); color: var(--text-dark);" />
+              <button type="button" id="admin-login-btn" class="btn-red" style="padding: 12px 24px; font-size: 14px; border-radius: 8px;">Verificar Acceso</button>
+            </div>
+            <span class="error-msg" id="admin-auth-error" style="display: block; margin-top: 4px; color: var(--accent-red); font-size: 12px; font-weight: 600;"></span>
+          </div>
+
+          <!-- Contenido Protegido -->
+          <div id="admin-protected-content" class="hidden">
+            <div class="admin-header-flex" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+              <span style="font-size: 14px; font-weight: 700; color: var(--accent-red); display: flex; align-items: center; gap: 8px;">
+                <span style="display: inline-block; width: 10px; height: 10px; background-color: #25d366; border-radius: 50%; animation: pulse 1.5s infinite;"></span>
+                Sesión Administrativa Activa
+              </span>
+              <button type="button" id="admin-logout-btn" class="btn-outline-dark" style="font-size: 12px; padding: 8px 16px; border-radius: 6px;">Cerrar Sesión</button>
+            </div>
+
+            <p class="compliance-policy-text" style="margin-bottom: 30px;">
+              <strong>Cumplimiento de Privacidad:</strong> Esta plataforma aplica controles avanzados de seguridad de la información. Los datos personales sensibles (teléfono y correo electrónico) se cifran mediante algoritmos simétricos robustos <strong>AES-256-GCM</strong> antes de su almacenamiento físico en la base de datos local <code>database.json</code>, garantizando la privacidad de los datos frente a accesos no autorizados. Todo evento de envío, descifrado y validación se registra y supervisa de manera inalterable en la traza de logs de auditoría <code>security_audit.log</code>.
+            </p>
+            
+            <!-- Panel Administrativo de Base de Datos Real -->
+            <div id="admin-panel" class="admin-dashboard-footer">
+              <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="db-entries">Base de Datos (Descifrado Seguro al Vuelo)</button>
+                <button class="tab-btn" data-tab="security-logs">Logs de Auditoría (security_audit.log)</button>
+              </div>
+
+              <!-- Tab 1: Registros de Base de Datos -->
+              <div id="tab-db-entries" class="tab-content active">
+                <div class="db-table-wrapper">
+                  <table class="db-table">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Teléfono (Descifrado al vuelo)</th>
+                        <th>Email (Descifrado al vuelo)</th>
+                        <th>Servicio</th>
+                        <th>Detalles / Mensaje</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="db-entries-body">
+                      <tr>
+                        <td colspan="7" class="table-empty-msg">Cargando registros descifrados desde base de datos segura...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Tab 2: Logs de Auditoría -->
+              <div id="tab-security-logs" class="tab-content">
+                <div class="logs-console">
+                  <pre id="audit-logs-output">Cargando logs de auditoría en tiempo real...</pre>
+                </div>
+                <button type="button" id="refresh-audit-btn" class="btn-outline-dark btn-sm">Actualizar Consola de Auditoría</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="/src/admin.js"></script>
+  </body>
+</html>
