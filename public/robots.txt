@@ -3,5 +3,6 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 Disallow: /admin
+Disallow: /api/
 
 Sitemap: https://escombrosamauryrojas.cl/sitemap.xml

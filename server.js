@@ -316,7 +316,11 @@ app.use(cors({
 // 3. Limitadores de frecuencia de peticiones (Rate Limiting)
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 200, // Límite de 200 peticiones por ventana por IP
+  max: 1000, // Capacidad para rastreadores como Googlebot y carga de múltiples assets
+  skip: (req) => {
+    const p = req.path;
+    return p === '/robots.txt' || p === '/sitemap.xml' || p.startsWith('/assets/') || p.startsWith('/images/') || p === '/favicon.png';
+  },
   message: { error: 'Demasiadas solicitudes desde esta IP, por favor intenta más tarde.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -615,6 +619,24 @@ app.get('/api/visits', visitsLimiter, (req, res) => {
 
 // Servir archivos estáticos del frontend en producción (carpeta dist generada por Vite)
 const distPath = path.join(__dirname, 'dist');
+
+// Servir robots.txt y sitemap.xml explícitamente con cabeceras correctas para Google Search Console
+app.get('/robots.txt', (req, res) => {
+  const robotsFile = fs.existsSync(path.join(distPath, 'robots.txt'))
+    ? path.join(distPath, 'robots.txt')
+    : path.join(__dirname, 'public', 'robots.txt');
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.sendFile(robotsFile);
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  const sitemapFile = fs.existsSync(path.join(distPath, 'sitemap.xml'))
+    ? path.join(distPath, 'sitemap.xml')
+    : path.join(__dirname, 'public', 'sitemap.xml');
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  res.sendFile(sitemapFile);
+});
+
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
   app.get(/(.*)/, (req, res) => {
